@@ -2,24 +2,23 @@
 import { GoogleGenAI } from "@google/genai";
 
 export const getGeminiResponse = async (userMessage: string, history: { role: 'user' | 'model', parts: { text: string }[] }[]) => {
-  // Verificación crítica de la API_KEY
   const apiKey = process.env.API_KEY;
 
   if (!apiKey || apiKey === "" || apiKey === "undefined") {
-    console.error("CRÍTICO: La API_KEY de Gemini no está configurada.");
-    return "El sistema de IA no está configurado (Falta API_KEY en Netlify). Por favor, utiliza el formulario de contacto para comunicarte con nosotros.";
+    console.error("Falta API_KEY");
+    return "Error: No se detectó la API_KEY en el entorno de Netlify. Por favor, configúrala en el panel de control del sitio.";
   }
 
   try {
-    // Creamos la instancia dentro de la llamada para asegurar que use el valor actual de la clave
     const ai = new GoogleGenAI({ apiKey: apiKey });
+    // Usamos gemini-3-flash-preview como recomendado
     const modelName = 'gemini-3-flash-preview';
     
     const systemInstruction = `
       Eres el asistente de 'Servicios Informáticos'. 
-      Brindamos soporte técnico exclusivamente para entornos Windows y Linux en Hogares y Pequeños Negocios.
-      No reparamos equipos Apple/Mac.
-      Sé breve, amable y profesional. Si el usuario pide un presupuesto, indícale que use el formulario de contacto.
+      Brindamos soporte técnico para Windows y Linux en Hogares y Pequeños Negocios.
+      IMPORTANTE: No reparamos Apple/Mac.
+      Responde de forma concisa y profesional. Si preguntan por precios, di que dependen del caso y que usen el formulario de contacto.
     `;
 
     const response = await ai.models.generateContent({
@@ -34,15 +33,24 @@ export const getGeminiResponse = async (userMessage: string, history: { role: 'u
       }
     });
 
-    return response.text || "No pude procesar tu mensaje en este momento.";
+    return response.text || "No recibí una respuesta clara del modelo.";
   } catch (error: any) {
-    console.error("Error en servicio Gemini:", error);
+    console.error("Error Detallado de Gemini:", error);
     
-    // Manejo específico de errores de permiso (403/401)
-    if (error.message?.includes('403') || error.message?.includes('permission') || error.message?.includes('API key')) {
-      return "Lo sentimos, hay un problema de permisos con la clave de IA. Por favor, avísanos a través del formulario de contacto para que podamos revisarlo.";
+    const msg = error.message?.toLowerCase() || "";
+    
+    if (msg.includes('403') || msg.includes('permission')) {
+      return "Error de Permisos (403): La clave de API es válida pero tiene restricciones de dominio en Google Cloud, o la API de IA Generativa no está habilitada en tu proyecto.";
     }
     
-    return "El servicio de mensajería automática está temporalmente fuera de servicio. Por favor, escríbenos directamente por WhatsApp o el formulario.";
+    if (msg.includes('401') || msg.includes('api key not found')) {
+      return "Error de Clave (401): La clave de API configurada es inválida o expiró.";
+    }
+
+    if (msg.includes('user location') || msg.includes('supported region')) {
+      return "Error de Región: El modelo Gemini 3 no está disponible en tu ubicación geográfica actual.";
+    }
+    
+    return "El servicio de IA encontró un error técnico. Por favor, utiliza el formulario de contacto para comunicarte con nosotros.";
   }
 };

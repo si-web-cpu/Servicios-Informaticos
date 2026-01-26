@@ -29,10 +29,11 @@ const Admin: React.FC = () => {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    // Credenciales de acceso
     if (user === 'admin' && pass === 'Admin_2025!#') {
       setIsAuthenticated(true);
     } else {
-      alert('Credenciales incorrectas.');
+      alert('Acceso denegado. Credenciales incorrectas.');
     }
   };
 
@@ -43,7 +44,7 @@ const Admin: React.FC = () => {
       saveFn();
       showFeedback(successMsg, 'success');
     } catch (err) {
-      showFeedback('Hubo un problema al procesar la solicitud', 'error');
+      showFeedback('Error al procesar la solicitud', 'error');
     } finally {
       setIsSaving(false);
     }
@@ -61,11 +62,11 @@ const Admin: React.FC = () => {
       setNews(updated);
       storageService.saveNews(updated);
       setEditItem(null);
-    }, 'Noticia guardada con éxito');
+    }, 'Noticia guardada exitosamente');
   };
 
   const handleDeleteNews = (id: string) => {
-    if (!window.confirm('¿Eliminar esta noticia?')) return;
+    if (!window.confirm('¿Seguro que deseas eliminar esta noticia?')) return;
     simulateSave(() => {
       const updated = news.filter((n: any) => n.id !== id);
       setNews(updated);
@@ -85,30 +86,30 @@ const Admin: React.FC = () => {
       setServices(updated);
       storageService.saveServices(updated);
       setEditService(null);
-    }, 'Servicio actualizado');
+    }, 'Servicio actualizado en el catálogo');
   };
 
   const handleDeleteService = (id: string) => {
-    if (!window.confirm('¿Eliminar este servicio?')) return;
+    if (!window.confirm('¿Seguro que deseas eliminar este servicio?')) return;
     simulateSave(() => {
       const updated = services.filter((s: any) => s.id !== id);
       setServices(updated);
       storageService.saveServices(updated);
-    }, 'Servicio eliminado');
+    }, 'Servicio retirado');
   };
 
   const handleSaveContact = (e: React.FormEvent) => {
     e.preventDefault();
     simulateSave(() => {
       storageService.saveContact(contact);
-    }, 'Configuración guardada correctamente');
+    }, 'Datos de contacto sincronizados');
   };
 
   const handleSaveSettings = (e: React.FormEvent) => {
     e.preventDefault();
     simulateSave(() => {
       storageService.saveSettings(settings);
-    }, 'Ajustes del sistema actualizados');
+    }, 'Ajustes del sistema aplicados');
   };
 
   if (!isAuthenticated) {
@@ -117,7 +118,8 @@ const Admin: React.FC = () => {
         <div className="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md">
           <div className="text-center mb-8">
             <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-3xl font-bold mx-auto mb-4">S</div>
-            <h1 className="text-2xl font-bold text-slate-900">Panel Staff</h1>
+            <h1 className="text-2xl font-bold text-slate-900">Panel de Control</h1>
+            <p className="text-slate-500 text-sm mt-1">Identifícate para gestionar el sitio</p>
           </div>
           <form onSubmit={handleLogin} className="space-y-4">
             <input 
@@ -134,8 +136,8 @@ const Admin: React.FC = () => {
               value={pass} 
               onChange={e => setPass(e.target.value)} 
             />
-            <button className="w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 transition-all">
-              Entrar al Sistema
+            <button className="w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-100">
+              Acceder al Sistema
             </button>
           </form>
         </div>
@@ -148,48 +150,61 @@ const Admin: React.FC = () => {
       
       {feedback && (
         <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[200] w-full max-w-md px-4">
-          <div className={`p-4 rounded-2xl shadow-2xl border flex items-center gap-3 animate-bounce ${
+          <div className={`p-4 rounded-2xl shadow-2xl border flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-300 ${
             feedback.type === 'success' ? 'bg-white text-green-700 border-green-100' : 'bg-white text-red-700 border-red-100'
           }`}>
-            <i className={`fa-solid ${feedback.type === 'success' ? 'fa-circle-check' : 'fa-triangle-exclamation'}`}></i>
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${feedback.type === 'success' ? 'bg-green-100' : 'bg-red-100'}`}>
+              <i className={`fa-solid ${feedback.type === 'success' ? 'fa-check' : 'fa-exclamation'}`}></i>
+            </div>
             <span className="font-bold text-sm">{feedback.msg}</span>
           </div>
         </div>
       )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-slate-900">Configuración Staff</h1>
-          <button onClick={() => setIsAuthenticated(false)} className="bg-slate-200 text-slate-700 px-4 py-2 rounded-lg font-bold hover:bg-red-50 hover:text-red-600 transition-all">Cerrar Sesión</button>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900">Administración Staff</h1>
+            <p className="text-slate-500">Gestiona noticias, servicios y datos de contacto.</p>
+          </div>
+          <button onClick={() => setIsAuthenticated(false)} className="bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-xl font-bold hover:bg-red-50 hover:text-red-600 transition-all flex items-center gap-2">
+            <i className="fa-solid fa-power-off"></i> Salir
+          </button>
         </div>
 
-        <div className="flex gap-4 mb-8 border-b border-slate-200 overflow-x-auto">
+        <div className="flex gap-4 mb-8 border-b border-slate-200 overflow-x-auto pb-1">
           {['news', 'services', 'contact', 'settings'].map(tab => (
             <button 
               key={tab} 
               onClick={() => setActiveTab(tab as any)}
-              className={`pb-4 px-4 font-bold whitespace-nowrap transition-all ${activeTab === tab ? 'border-b-2 border-blue-600 text-blue-600' : 'text-slate-400 hover:text-slate-600'}`}
+              className={`pb-4 px-6 font-bold whitespace-nowrap transition-all relative ${activeTab === tab ? 'text-blue-600' : 'text-slate-400 hover:text-slate-600'}`}
             >
-              {tab === 'news' ? 'Noticias' : tab === 'services' ? 'Servicios' : tab === 'contact' ? 'Contacto y Redes' : 'Sistema'}
+              {tab === 'news' ? 'Noticias' : tab === 'services' ? 'Servicios' : tab === 'contact' ? 'Contacto y Redes' : 'Ajustes'}
+              {activeTab === tab && <div className="absolute bottom-0 left-0 right-0 h-1 bg-blue-600 rounded-t-full"></div>}
             </button>
           ))}
         </div>
 
         {activeTab === 'news' && (
           <div className="space-y-6">
-            <button onClick={() => setEditItem({ title: '', excerpt: '', fullContent: '', image: 'https://images.unsplash.com/photo-1518770660439-4636190af475', date: new Date().toLocaleDateString(), author: 'Staff' })} className="bg-blue-600 text-white px-6 py-2 rounded-xl font-bold hover:bg-blue-700 transition-colors shadow-md">+ Crear Noticia</button>
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <button onClick={() => setEditItem({ title: '', excerpt: '', fullContent: '', image: 'https://images.unsplash.com/photo-1518770660439-4636190af475', date: new Date().toLocaleDateString(), author: 'Admin' })} className="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-100 flex items-center gap-2">
+              <i className="fa-solid fa-plus"></i> Nueva Noticia
+            </button>
+            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
               <table className="w-full text-left text-sm">
                 <thead className="bg-slate-50 border-b border-slate-200">
-                  <tr><th className="px-6 py-4 font-bold text-slate-700">Título</th><th className="px-6 py-4 text-right font-bold text-slate-700">Acciones</th></tr>
+                  <tr>
+                    <th className="px-6 py-4 font-bold text-slate-700">Título de la Noticia</th>
+                    <th className="px-6 py-4 text-right font-bold text-slate-700">Acciones</th>
+                  </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {news.map((item: any) => (
-                    <tr key={item.id} className="hover:bg-slate-50 transition-colors">
+                    <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
                       <td className="px-6 py-4 font-medium text-slate-800">{item.title}</td>
                       <td className="px-6 py-4 text-right space-x-3">
                         <button onClick={() => setEditItem(item)} className="text-blue-600 font-bold hover:underline">Editar</button>
-                        <button onClick={() => handleDeleteNews(item.id)} className="text-red-600 font-bold hover:underline">Eliminar</button>
+                        <button onClick={() => handleDeleteNews(item.id)} className="text-red-600 font-bold hover:underline">Borrar</button>
                       </td>
                     </tr>
                   ))}
@@ -201,24 +216,30 @@ const Admin: React.FC = () => {
 
         {activeTab === 'services' && (
           <div className="space-y-6">
-            <button onClick={() => setEditService({ title: '', category: 'hogar', icon: 'fa-microchip', desc: '', info: '' })} className="bg-blue-600 text-white px-6 py-2 rounded-xl font-bold hover:bg-blue-700 transition-colors shadow-md">+ Crear Servicio</button>
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <button onClick={() => setEditService({ title: '', category: 'hogar', icon: 'fa-microchip', desc: '', info: '' })} className="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-100 flex items-center gap-2">
+              <i className="fa-solid fa-plus"></i> Añadir Servicio
+            </button>
+            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
               <table className="w-full text-left text-sm">
                 <thead className="bg-slate-50 border-b border-slate-200">
-                  <tr><th className="px-6 py-4 font-bold text-slate-700">Servicio</th><th className="px-6 py-4 font-bold text-slate-700">Categoría</th><th className="px-6 py-4 text-right font-bold text-slate-700">Acciones</th></tr>
+                  <tr>
+                    <th className="px-6 py-4 font-bold text-slate-700">Servicio</th>
+                    <th className="px-6 py-4 font-bold text-slate-700">Categoría</th>
+                    <th className="px-6 py-4 text-right font-bold text-slate-700">Acciones</th>
+                  </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {services.map((s: any) => (
-                    <tr key={s.id} className="hover:bg-slate-50 transition-colors">
+                    <tr key={s.id} className="hover:bg-slate-50/50 transition-colors">
                       <td className="px-6 py-4 font-medium text-slate-800">{s.title}</td>
-                      <td className="px-6 py-4">
-                        <span className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase ${s.category === 'hogar' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
-                          {s.category === 'hogar' ? 'Hogar' : 'Negocios'}
+                      <td className="px-6 py-4 capitalize">
+                        <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${s.category === 'hogar' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
+                          {s.category}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right space-x-3">
                         <button onClick={() => setEditService(s)} className="text-blue-600 font-bold hover:underline">Editar</button>
-                        <button onClick={() => handleDeleteService(s.id)} className="text-red-600 font-bold hover:underline">Eliminar</button>
+                        <button onClick={() => handleDeleteService(s.id)} className="text-red-600 font-bold hover:underline">Borrar</button>
                       </td>
                     </tr>
                   ))}
@@ -229,54 +250,64 @@ const Admin: React.FC = () => {
         )}
 
         {activeTab === 'contact' && (
-          <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm max-w-2xl">
-            <h2 className="text-2xl font-bold mb-6 text-slate-800">Datos Públicos y Redes</h2>
-            <form onSubmit={handleSaveContact} className="space-y-4">
-              <div className="grid md:grid-cols-2 gap-4">
+          <div className="bg-white p-10 rounded-3xl border border-slate-200 shadow-sm max-w-2xl">
+            <h2 className="text-2xl font-bold mb-6 text-slate-800">Información de Contacto y Redes</h2>
+            <form onSubmit={handleSaveContact} className="space-y-6">
+              <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase">Teléfono</label>
-                  <input type="text" className="w-full border p-3 rounded-xl" value={contact.phone} onChange={e => setContact({...contact, phone: e.target.value})} />
+                  <label className="text-[10px] font-bold text-slate-400 uppercase ml-1 tracking-wider">Teléfono Público</label>
+                  <input type="text" className="w-full border p-3 rounded-xl bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500 transition-all" value={contact.phone} onChange={e => setContact({...contact, phone: e.target.value})} />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase">Email</label>
-                  <input type="email" className="w-full border p-3 rounded-xl" value={contact.email} onChange={e => setContact({...contact, email: e.target.value})} />
+                  <label className="text-[10px] font-bold text-slate-400 uppercase ml-1 tracking-wider">Email Público</label>
+                  <input type="email" className="w-full border p-3 rounded-xl bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500 transition-all" value={contact.email} onChange={e => setContact({...contact, email: e.target.value})} />
                 </div>
               </div>
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-400 uppercase">WhatsApp (Nros sin +)</label>
-                <input type="text" className="w-full border p-3 rounded-xl" value={contact.whatsapp} onChange={e => setContact({...contact, whatsapp: e.target.value})} />
+                <label className="text-[10px] font-bold text-slate-400 uppercase ml-1 tracking-wider">WhatsApp (Números sin +, ej: 549351...)</label>
+                <input type="text" className="w-full border p-3 rounded-xl bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500 transition-all" value={contact.whatsapp} onChange={e => setContact({...contact, whatsapp: e.target.value})} />
               </div>
-              <div className="grid md:grid-cols-2 gap-4 pt-6 border-t border-slate-100">
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase">Facebook URL</label>
-                  <input type="text" placeholder="https://..." className="w-full border p-3 rounded-xl" value={contact.facebook || ''} onChange={e => setContact({...contact, facebook: e.target.value})} />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase">Instagram URL</label>
-                  <input type="text" placeholder="https://..." className="w-full border p-3 rounded-xl" value={contact.instagram || ''} onChange={e => setContact({...contact, instagram: e.target.value})} />
+              
+              <div className="pt-6 border-t border-slate-100 space-y-4">
+                <h3 className="text-sm font-bold text-slate-700">Enlaces de Redes Sociales</h3>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase ml-1 tracking-wider">Facebook (URL completa)</label>
+                    <input type="text" placeholder="https://facebook.com/..." className="w-full border p-3 rounded-xl bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500 transition-all" value={contact.facebook || ''} onChange={e => setContact({...contact, facebook: e.target.value})} />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase ml-1 tracking-wider">Instagram (URL completa)</label>
+                    <input type="text" placeholder="https://instagram.com/..." className="w-full border p-3 rounded-xl bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500 transition-all" value={contact.instagram || ''} onChange={e => setContact({...contact, instagram: e.target.value})} />
+                  </div>
                 </div>
               </div>
-              <button type="submit" disabled={isSaving} className="w-full py-4 bg-blue-600 text-white rounded-xl font-bold mt-4 shadow-lg hover:bg-blue-700 transition-colors">
-                {isSaving ? 'Guardando...' : 'Actualizar Información'}
+
+              <button type="submit" disabled={isSaving} className="w-full py-4 bg-blue-600 text-white rounded-xl font-bold mt-4 shadow-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
+                {isSaving ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> : <i className="fa-solid fa-floppy-disk"></i>}
+                {isSaving ? 'Guardando...' : 'Guardar Todos los Cambios'}
               </button>
             </form>
           </div>
         )}
 
         {activeTab === 'settings' && (
-          <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm max-w-2xl">
-            <h2 className="text-2xl font-bold mb-2 text-slate-800">Ajustes Técnicos</h2>
+          <div className="bg-white p-10 rounded-3xl border border-slate-200 shadow-sm max-w-2xl">
+            <h2 className="text-2xl font-bold mb-2 text-slate-800">Infraestructura del Sistema</h2>
+            <p className="text-sm text-slate-500 mb-8">Ajustes técnicos avanzados para el funcionamiento del sitio.</p>
             <form onSubmit={handleSaveSettings} className="space-y-6">
               <div className="space-y-2">
-                <label className="block text-xs font-bold text-slate-400 uppercase">Endpoint Formulario (Formspree)</label>
+                <label className="block text-xs font-bold text-slate-400 uppercase ml-1 tracking-widest">URL de Endpoint (Formspree)</label>
                 <input 
                   type="text" 
-                  className="w-full border p-3 rounded-xl font-mono text-sm bg-slate-50" 
+                  className="w-full border p-4 rounded-xl font-mono text-xs bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-slate-900 transition-all" 
                   value={settings.formEndpoint} 
                   onChange={e => setSettings({...settings, formEndpoint: e.target.value})} 
+                  placeholder="https://formspree.io/f/tu-id-aqui"
                 />
               </div>
-              <button type="submit" className="w-full py-4 bg-slate-900 text-white rounded-xl font-bold">Guardar Cambios del Sistema</button>
+              <button type="submit" className="w-full py-4 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-colors">
+                Actualizar Configuración Técnica
+              </button>
             </form>
           </div>
         )}
@@ -284,28 +315,30 @@ const Admin: React.FC = () => {
         {/* MODAL NOTICIAS */}
         {editItem && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 overflow-y-auto">
-            <div className="bg-white p-8 rounded-3xl w-full max-w-2xl shadow-2xl my-8">
-              <h2 className="text-xl font-bold mb-6 text-slate-900">Editor de Noticia</h2>
+            <div className="bg-white p-10 rounded-3xl w-full max-w-2xl shadow-2xl my-8 animate-in zoom-in duration-200">
+              <h2 className="text-2xl font-bold mb-6 text-slate-900 flex items-center gap-3">
+                <i className="fa-solid fa-pen-to-square text-blue-600"></i> Editor de Contenido
+              </h2>
               <form onSubmit={handleSaveNews} className="space-y-4">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase">Título</label>
-                  <input type="text" required className="w-full border p-3 rounded-xl" value={editItem.title} onChange={e => setEditItem({...editItem, title: e.target.value})} />
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Título de la Noticia</label>
+                  <input type="text" required className="w-full border p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" value={editItem.title} onChange={e => setEditItem({...editItem, title: e.target.value})} />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase">URL de Imagen</label>
-                  <input type="text" required className="w-full border p-3 rounded-xl" value={editItem.image} onChange={e => setEditItem({...editItem, image: e.target.value})} placeholder="https://images.unsplash.com/..." />
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">URL de la Imagen de Cabecera</label>
+                  <input type="text" required className="w-full border p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" value={editItem.image} onChange={e => setEditItem({...editItem, image: e.target.value})} placeholder="https://images.unsplash.com/..." />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase">Resumen</label>
-                  <textarea required className="w-full border p-3 rounded-xl" rows={2} value={editItem.excerpt} onChange={e => setEditItem({...editItem, excerpt: e.target.value})} />
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Resumen (Aparece en la lista)</label>
+                  <textarea required className="w-full border p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 resize-none" rows={2} value={editItem.excerpt} onChange={e => setEditItem({...editItem, excerpt: e.target.value})} />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase">Cuerpo de la Noticia</label>
-                  <textarea required className="w-full border p-3 rounded-xl" rows={5} value={editItem.fullContent} onChange={e => setEditItem({...editItem, fullContent: e.target.value})} />
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Cuerpo Completo del Artículo</label>
+                  <textarea required className="w-full border p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 resize-none" rows={6} value={editItem.fullContent} onChange={e => setEditItem({...editItem, fullContent: e.target.value})} />
                 </div>
-                <div className="flex gap-3 pt-4">
-                  <button type="submit" className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold">Guardar</button>
-                  <button type="button" onClick={() => setEditItem(null)} className="flex-1 bg-slate-100 py-3 rounded-xl font-bold">Cerrar</button>
+                <div className="flex gap-4 pt-6">
+                  <button type="submit" className="flex-1 bg-blue-600 text-white py-4 rounded-xl font-bold shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all">Guardar Cambios</button>
+                  <button type="button" onClick={() => setEditItem(null)} className="flex-1 bg-slate-100 text-slate-600 py-4 rounded-xl font-bold hover:bg-slate-200 transition-all">Cancelar</button>
                 </div>
               </form>
             </div>
@@ -315,31 +348,33 @@ const Admin: React.FC = () => {
         {/* MODAL SERVICIOS */}
         {editService && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-            <div className="bg-white p-8 rounded-3xl w-full max-w-xl shadow-2xl">
-              <h2 className="text-xl font-bold mb-6 text-slate-900">Configurar Servicio</h2>
+            <div className="bg-white p-10 rounded-3xl w-full max-w-xl shadow-2xl animate-in zoom-in duration-200">
+              <h2 className="text-2xl font-bold mb-6 text-slate-900 flex items-center gap-3">
+                <i className="fa-solid fa-gears text-blue-600"></i> Ajustar Servicio
+              </h2>
               <form onSubmit={handleSaveService} className="space-y-4">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase">Nombre del Servicio</label>
-                  <input type="text" required className="w-full border p-3 rounded-xl" value={editService.title} onChange={e => setEditService({...editService, title: e.target.value})} />
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nombre del Servicio</label>
+                  <input type="text" required className="w-full border p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" value={editService.title} onChange={e => setEditService({...editService, title: e.target.value})} />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase">Categoría</label>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Público Objetivo</label>
                   <select 
-                    className="w-full border p-3 rounded-xl bg-white"
+                    className="w-full border p-3 rounded-xl bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500"
                     value={editService.category}
                     onChange={e => setEditService({...editService, category: e.target.value})}
                   >
-                    <option value="hogar">Para el Hogar</option>
-                    <option value="negocios">Para Negocios</option>
+                    <option value="hogar">Uso Residencial (Hogar)</option>
+                    <option value="negocios">Uso Profesional (Negocios)</option>
                   </select>
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase">Descripción Corta</label>
-                  <textarea required className="w-full border p-3 rounded-xl" rows={3} value={editService.desc} onChange={e => setEditService({...editService, desc: e.target.value})} />
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Descripción del Servicio</label>
+                  <textarea required className="w-full border p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 resize-none" rows={3} value={editService.desc} onChange={e => setEditService({...editService, desc: e.target.value})} />
                 </div>
-                <div className="flex gap-3 pt-4">
-                  <button type="submit" className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold">Guardar</button>
-                  <button type="button" onClick={() => setEditService(null)} className="flex-1 bg-slate-100 py-3 rounded-xl font-bold">Cancelar</button>
+                <div className="flex gap-4 pt-6">
+                  <button type="submit" className="flex-1 bg-blue-600 text-white py-4 rounded-xl font-bold shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all">Sincronizar</button>
+                  <button type="button" onClick={() => setEditService(null)} className="flex-1 bg-slate-100 text-slate-600 py-4 rounded-xl font-bold hover:bg-slate-200 transition-all">Descartar</button>
                 </div>
               </form>
             </div>
