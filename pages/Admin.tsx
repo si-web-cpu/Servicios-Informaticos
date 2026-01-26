@@ -238,15 +238,34 @@ const Admin: React.FC = () => {
 
         {activeTab === 'contact' && (
           <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm max-w-2xl">
-            <h2 className="text-2xl font-bold mb-6 text-slate-800">Datos Públicos</h2>
+            <h2 className="text-2xl font-bold mb-6 text-slate-800">Datos Públicos y Redes</h2>
             <form onSubmit={handleSaveContact} className="space-y-4">
               <div className="grid md:grid-cols-2 gap-4">
-                <input type="text" className="w-full border p-3 rounded-xl" value={contact.phone} onChange={e => setContact({...contact, phone: e.target.value})} placeholder="Teléfono" />
-                <input type="email" className="w-full border p-3 rounded-xl" value={contact.email} onChange={e => setContact({...contact, email: e.target.value})} placeholder="Email" />
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">Teléfono</label>
+                  <input type="text" className="w-full border p-3 rounded-xl" value={contact.phone} onChange={e => setContact({...contact, phone: e.target.value})} placeholder="Teléfono" />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">Email</label>
+                  <input type="email" className="w-full border p-3 rounded-xl" value={contact.email} onChange={e => setContact({...contact, email: e.target.value})} placeholder="Email" />
+                </div>
               </div>
-              <input type="text" className="w-full border p-3 rounded-xl" value={contact.whatsapp} onChange={e => setContact({...contact, whatsapp: e.target.value})} placeholder="WhatsApp (+54...)" />
-              <button type="submit" disabled={isSaving} className="w-full py-4 bg-blue-600 text-white rounded-xl font-bold mt-4">
-                {isSaving ? 'Guardando...' : 'Guardar Datos de Contacto'}
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">WhatsApp (+54...)</label>
+                <input type="text" className="w-full border p-3 rounded-xl" value={contact.whatsapp} onChange={e => setContact({...contact, whatsapp: e.target.value})} placeholder="WhatsApp" />
+              </div>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">Facebook URL</label>
+                  <input type="text" className="w-full border p-3 rounded-xl" value={contact.facebook || ''} onChange={e => setContact({...contact, facebook: e.target.value})} placeholder="https://facebook.com/..." />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">Instagram URL</label>
+                  <input type="text" className="w-full border p-3 rounded-xl" value={contact.instagram || ''} onChange={e => setContact({...contact, instagram: e.target.value})} placeholder="https://instagram.com/..." />
+                </div>
+              </div>
+              <button type="submit" disabled={isSaving} className="w-full py-4 bg-blue-600 text-white rounded-xl font-bold mt-4 shadow-lg hover:bg-blue-700 transition-colors">
+                {isSaving ? 'Guardando...' : 'Guardar Configuración'}
               </button>
             </form>
           </div>
@@ -286,14 +305,27 @@ const Admin: React.FC = () => {
 
         {/* MODALES REUTILIZADOS */}
         {editItem && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-            <div className="bg-white p-8 rounded-3xl w-full max-w-2xl shadow-2xl">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 overflow-y-auto">
+            <div className="bg-white p-8 rounded-3xl w-full max-w-2xl shadow-2xl my-8">
               <h2 className="text-xl font-bold mb-6 text-slate-900">Editar Noticia</h2>
               <form onSubmit={handleSaveNews} className="space-y-4">
-                <input type="text" required className="w-full border p-3 rounded-xl" value={editItem.title} onChange={e => setEditItem({...editItem, title: e.target.value})} placeholder="Título" />
-                <textarea required className="w-full border p-3 rounded-xl" rows={3} value={editItem.excerpt} onChange={e => setEditItem({...editItem, excerpt: e.target.value})} placeholder="Resumen" />
-                <textarea required className="w-full border p-3 rounded-xl" rows={5} value={editItem.fullContent} onChange={e => setEditItem({...editItem, fullContent: e.target.value})} placeholder="Contenido completo" />
-                <div className="flex gap-3">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase">Título de la Noticia</label>
+                  <input type="text" required className="w-full border p-3 rounded-xl" value={editItem.title} onChange={e => setEditItem({...editItem, title: e.target.value})} placeholder="Título" />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase">URL de la Imagen</label>
+                  <input type="text" required className="w-full border p-3 rounded-xl" value={editItem.image} onChange={e => setEditItem({...editItem, image: e.target.value})} placeholder="https://images.unsplash.com/..." />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase">Resumen (Excerpt)</label>
+                  <textarea required className="w-full border p-3 rounded-xl" rows={3} value={editItem.excerpt} onChange={e => setEditItem({...editItem, excerpt: e.target.value})} placeholder="Resumen corto para la lista" />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase">Contenido Detallado</label>
+                  <textarea required className="w-full border p-3 rounded-xl" rows={5} value={editItem.fullContent} onChange={e => setEditItem({...editItem, fullContent: e.target.value})} placeholder="Escribe aquí toda la noticia..." />
+                </div>
+                <div className="flex gap-3 pt-4">
                   <button type="submit" disabled={isSaving} className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold disabled:opacity-50">
                     {isSaving ? 'Guardando...' : 'Guardar Noticia'}
                   </button>
@@ -309,9 +341,26 @@ const Admin: React.FC = () => {
             <div className="bg-white p-8 rounded-3xl w-full max-w-xl shadow-2xl">
               <h2 className="text-xl font-bold mb-6 text-slate-900">Editar Servicio</h2>
               <form onSubmit={handleSaveService} className="space-y-4">
-                <input type="text" required className="w-full border p-3 rounded-xl" value={editService.title} onChange={e => setEditService({...editService, title: e.target.value})} placeholder="Nombre" />
-                <textarea required className="w-full border p-3 rounded-xl" value={editService.desc} onChange={e => setEditService({...editService, desc: e.target.value})} placeholder="Descripción corta" />
-                <div className="flex gap-3">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase">Nombre del Servicio</label>
+                  <input type="text" required className="w-full border p-3 rounded-xl" value={editService.title} onChange={e => setEditService({...editService, title: e.target.value})} placeholder="Ej: Reparación de Computadoras" />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase">Categoría</label>
+                  <select 
+                    className="w-full border p-3 rounded-xl bg-white"
+                    value={editService.category}
+                    onChange={e => setEditService({...editService, category: e.target.value})}
+                  >
+                    <option value="hogar">Hogar</option>
+                    <option value="negocios">Negocios</option>
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase">Descripción</label>
+                  <textarea required className="w-full border p-3 rounded-xl" rows={3} value={editService.desc} onChange={e => setEditService({...editService, desc: e.target.value})} placeholder="¿En qué consiste el servicio?" />
+                </div>
+                <div className="flex gap-3 pt-4">
                   <button type="submit" disabled={isSaving} className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold disabled:opacity-50">
                     {isSaving ? 'Actualizando...' : 'Actualizar Servicio'}
                   </button>
