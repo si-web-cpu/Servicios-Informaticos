@@ -1,0 +1,8 @@
+{
+  "name": "Servicios Informáticos",
+  "description": "Una plataforma profesional de servicios informáticos para hogares y pequeños emprendimientos, con soporte impulsado por IA y diseño moderno.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
