@@ -1,6 +1,7 @@
 
 import React, { Suspense, lazy } from 'react';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Chatbot from './components/Chatbot';
@@ -39,6 +40,7 @@ const App: React.FC = () => {
         </main>
         <Chatbot />
         <Footer />
+        <SpeedInsights />
       </div>
     </Router>
   );
