@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus IT Soluciones</title>
+    <title>Servicios Informáticos</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -42,6 +42,14 @@
         .reveal-left.active, .reveal-right.active { transform: translateX(0); }
         .reveal-scale.active { transform: scale(1); }
     </style>
+    <!-- Shim para evitar el error "process is not defined" en hosting estático -->
+    <script>
+      window.process = {
+        env: {
+          API_KEY: "" // Se llenará desde la configuración del hosting si es necesario
+        }
+      };
+    </script>
 <script type="importmap">
 {
   "imports": {
@@ -57,6 +65,8 @@
 </head>
 <body class="bg-slate-50 text-slate-900">
     <div id="root"></div>
+    <!-- Carga explícita del punto de entrada de la aplicación -->
+    <script type="module" src="./index.tsx"></script>
 <script type="module" src="/index.tsx"></script>
 </body>
 </html>

@@ -15,7 +15,7 @@ const Home: React.FC = () => {
                 Tecnología al <span className="text-blue-600">Servicio de tu Hogar</span> y Negocio
               </h1>
               <p className="mt-6 text-xl text-slate-600 max-w-2xl">
-                Soluciones informáticas profesionales, rápidas y confiables para particulares y pequeños emprendedores. Reparamos, instalamos y protegemos tu mundo digital.
+                Servicios informáticos profesionales, rápidos y confiables para particulares y pequeños emprendedores. Reparamos, instalamos y protegemos tu mundo digital.
               </p>
               <div className="mt-10 flex flex-col sm:flex-row gap-4">
                 <Link to="/servicios" className="bg-blue-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-blue-700 transition-all text-center shadow-lg shadow-blue-200">
@@ -42,7 +42,7 @@ const Home: React.FC = () => {
       <section className="py-20 bg-slate-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollReveal className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-slate-900">¿Por qué elegir Nexus IT?</h2>
+            <h2 className="text-3xl font-bold text-slate-900">¿Por qué elegirnos?</h2>
             <div className="w-20 h-1 bg-blue-600 mx-auto mt-4 rounded-full"></div>
           </ScrollReveal>
           

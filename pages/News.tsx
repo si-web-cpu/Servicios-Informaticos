@@ -13,7 +13,7 @@ export const newsData = [
     excerpt: 'Cinco pasos fundamentales para configurar tu router y evitar que extraños accedan a tu conexión.',
     fullContent: `Proteger tu red inalámbrica es el primer paso para asegurar tu vida digital.`,
     image: 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=800&q=80',
-    author: 'Admin Nexus'
+    author: 'Admin SI'
   },
   {
     id: '2',
@@ -22,7 +22,7 @@ export const newsData = [
     excerpt: 'Analizamos las ventajas y desventajas del nuevo sistema operativo para pequeños emprendimientos.',
     fullContent: `Windows 11 ha madurado significativamente desde su lanzamiento.`,
     image: 'https://images.unsplash.com/photo-1624555130581-1d9cca783bc0?auto=format&fit=crop&w=800&q=80',
-    author: 'Equipo Técnico'
+    author: 'Equipo SI'
   },
   {
     id: '3',
@@ -31,7 +31,7 @@ export const newsData = [
     excerpt: 'Por qué no deberías confiar solo en un disco duro externo para guardar tu información vital.',
     fullContent: `El error más común de los pequeños negocios es pensar que un disco externo "es suficiente".`,
     image: 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?auto=format&fit=crop&w=800&q=80',
-    author: 'Consultoría Nexus'
+    author: 'Consultoría SI'
   },
   {
     id: '4',
@@ -40,7 +40,7 @@ export const newsData = [
     excerpt: 'El polvo y la falta de mantenimiento térmico pueden matar tus componentes.',
     fullContent: `Muchos usuarios ignoran el mantenimiento físico de sus computadoras.`,
     image: 'https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?auto=format&fit=crop&w=800&q=80',
-    author: 'Soporte Técnico'
+    author: 'Soporte Técnico SI'
   },
   {
     id: '5',
@@ -49,7 +49,7 @@ export const newsData = [
     excerpt: 'Descubre cómo automatizar tu atención al cliente con inteligencia artificial.',
     fullContent: `La democratización de la IA permite que un almacén compita con grandes firmas.`,
     image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=800&q=80',
-    author: 'Área de Innovación'
+    author: 'Innovación SI'
   },
   {
     id: '6',
@@ -58,7 +58,7 @@ export const newsData = [
     excerpt: 'La autenticación en dos pasos es la barrera más efectiva contra el robo de cuentas.',
     fullContent: `Las contraseñas ya no son suficientes. Los ataques de phishing son cada vez más sofisticados.`,
     image: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=800&q=80',
-    author: 'Ciberseguridad Nexus'
+    author: 'Ciberseguridad SI'
   }
 ];
 

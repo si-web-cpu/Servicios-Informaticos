@@ -49,7 +49,7 @@ const NewsDetail: React.FC = () => {
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 w-full">
             <ScrollReveal variant="up">
               <span className="bg-blue-600 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest mb-4 inline-block">
-                Blog Nexus IT
+                Blog Servicios Informáticos
               </span>
               <h1 className="text-3xl md:text-5xl font-bold text-white leading-tight">
                 {article.title}
@@ -70,7 +70,7 @@ const NewsDetail: React.FC = () => {
               </div>
               <div className="flex items-center gap-2">
                 <i className="fa-solid fa-user text-blue-600"></i>
-                <span>{article.author || 'Equipo Nexus'}</span>
+                <span>{article.author || 'Equipo SI'}</span>
               </div>
             </ScrollReveal>
 
@@ -102,15 +102,6 @@ const NewsDetail: React.FC = () => {
                 <Link to="/contacto" className="block text-center bg-blue-600 text-white text-sm font-bold py-3 rounded-xl hover:bg-blue-700 transition-colors shadow-lg shadow-blue-100">
                   Contactar Soporte
                 </Link>
-              </div>
-
-              <div className="p-2">
-                <h4 className="font-bold text-slate-900 mb-4 text-sm uppercase tracking-widest">Compartir</h4>
-                <div className="flex gap-3">
-                  <button className="w-10 h-10 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all"><i className="fa-brands fa-facebook-f"></i></button>
-                  <button className="w-10 h-10 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center hover:bg-blue-400 hover:text-white transition-all"><i className="fa-brands fa-twitter"></i></button>
-                  <button className="w-10 h-10 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center hover:bg-green-500 hover:text-white transition-all"><i className="fa-brands fa-whatsapp"></i></button>
-                </div>
               </div>
             </ScrollReveal>
           </div>

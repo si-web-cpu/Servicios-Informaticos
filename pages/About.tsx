@@ -10,14 +10,14 @@ const About: React.FC = () => {
           <ScrollReveal className="lg:w-1/2" variant="left">
             <h1 className="text-4xl font-bold text-slate-900 mb-6 underline decoration-blue-600 decoration-4 underline-offset-8">Quiénes Somos</h1>
             <p className="text-lg text-slate-600 mb-6">
-              En <span className="font-bold text-blue-600">Nexus IT Soluciones</span>, nacimos con la misión de democratizar el acceso al soporte técnico de alta calidad. Creemos que no hace falta ser una multinacional para tener sistemas eficientes, seguros y modernos.
+              En <span className="font-bold text-blue-600">Servicios Informáticos</span>, nacimos con la misión de democratizar el acceso al soporte técnico de alta calidad. Creemos que no hace falta ser una multinacional para tener sistemas eficientes, seguros y modernos.
             </p>
             <p className="text-lg text-slate-600 mb-6">
-              Desde hace más de 5 años, brindamos asistencia personalizada a cientos de hogares y pequeños emprendimientos que buscaban un socio tecnológico de confianza. No solo reparamos equipos, construimos relaciones de largo plazo.
+              Desde hace más de 25 años, brindamos asistencia personalizada a cientos de hogares y pequeños emprendimientos que buscaban un socio tecnológico de confianza. No solo reparamos equipos, construimos relaciones de largo plazo.
             </p>
             <div className="grid grid-cols-2 gap-6 mt-8">
               <div className="border-l-4 border-blue-600 pl-4">
-                <h4 className="text-3xl font-bold text-slate-900">500+</h4>
+                <h4 className="text-3xl font-bold text-slate-900">150+</h4>
                 <p className="text-slate-500">Clientes Felices</p>
               </div>
               <div className="border-l-4 border-blue-600 pl-4">

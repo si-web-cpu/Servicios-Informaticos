@@ -1,24 +1,28 @@
+
 import { GoogleGenAI } from "@google/genai";
 
-// Always use the process.env.API_KEY directly as specified in the guidelines
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 export const getGeminiResponse = async (userMessage: string, history: { role: 'user' | 'model', parts: { text: string }[] }[]) => {
+  const apiKey = process.env.API_KEY;
+
+  if (!apiKey || apiKey === "" || apiKey === "undefined") {
+    console.error("Falta API_KEY");
+    return "Error: No se detectó la API_KEY en el entorno de Netlify. Por favor, configúrala en el panel de control del sitio.";
+  }
+
   try {
-    const model = 'gemini-3-flash-preview';
+    const ai = new GoogleGenAI({ apiKey: apiKey });
+    // Usamos gemini-3-flash-preview como recomendado
+    const modelName = 'gemini-3-flash-preview';
+    
     const systemInstruction = `
-      Eres el asistente virtual de 'Nexus IT Soluciones'. 
-      Nuestra empresa brinda servicios informáticos exclusivamente para PCs (Windows/Linux) a hogares y pequeños emprendimientos.
-      NO brindamos soporte técnico para productos Apple/Mac.
-      Servicios: Reparación de PCs, Instalación de Redes, Seguridad Informática, Backup de datos, y Asesoramiento Tecnológico.
-      Tu tono debe ser profesional, servicial y amable. 
-      Responde preguntas técnicas básicas y guía a los usuarios para que nos contacten por el formulario si necesitan un presupuesto detallado.
-      No inventes precios exactos, di que varían según la complejidad.
+      Eres el asistente de 'Servicios Informáticos'. 
+      Brindamos soporte técnico para Windows y Linux en Hogares y Pequeños Negocios.
+      IMPORTANTE: No reparamos Apple/Mac.
+      Responde de forma concisa y profesional. Si preguntan por precios, di que dependen del caso y que usen el formulario de contacto.
     `;
 
-    // Updated to use the correct contents structure and systemInstruction in config
     const response = await ai.models.generateContent({
-      model: model,
+      model: modelName,
       contents: [
         ...history.map(h => ({ role: h.role, parts: h.parts })),
         { role: 'user', parts: [{ text: userMessage }] }
@@ -26,15 +30,27 @@ export const getGeminiResponse = async (userMessage: string, history: { role: 'u
       config: {
         systemInstruction: systemInstruction,
         temperature: 0.7,
-        topP: 0.8,
-        topK: 40,
       }
     });
 
-    // Accessing .text directly as it is a property, not a method
-    return response.text || "Lo siento, tuve un problema procesando tu solicitud. ¿Podrías intentar de nuevo?";
-  } catch (error) {
-    console.error("Gemini Error:", error);
-    return "Disculpa, nuestro servicio de mensajería está experimentando dificultades técnicas. Por favor, contáctanos a través del formulario de contacto.";
+    return response.text || "No recibí una respuesta clara del modelo.";
+  } catch (error: any) {
+    console.error("Error Detallado de Gemini:", error);
+    
+    const msg = error.message?.toLowerCase() || "";
+    
+    if (msg.includes('403') || msg.includes('permission')) {
+      return "Error de Permisos (403): La clave de API es válida pero tiene restricciones de dominio en Google Cloud, o la API de IA Generativa no está habilitada en tu proyecto.";
+    }
+    
+    if (msg.includes('401') || msg.includes('api key not found')) {
+      return "Error de Clave (401): La clave de API configurada es inválida o expiró.";
+    }
+
+    if (msg.includes('user location') || msg.includes('supported region')) {
+      return "Error de Región: El modelo Gemini 3 no está disponible en tu ubicación geográfica actual.";
+    }
+    
+    return "El servicio de IA encontró un error técnico. Por favor, utiliza el formulario de contacto para comunicarte con nosotros.";
   }
 };

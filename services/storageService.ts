@@ -16,10 +16,10 @@ const defaultServices = [
 
 const defaultContact = {
   phone: '+54 351 381 0411',
-  email: 'soporte@nexus-it.com',
+  email: 'soporte@servicios-informaticos.com',
   whatsapp: '+543513810411',
-  facebook: 'https://facebook.com/nexusit',
-  instagram: 'https://instagram.com/nexusit',
+  facebook: 'https://facebook.com/servinformaticos',
+  instagram: 'https://instagram.com/servinformaticos',
   hours: {
     week: '09:00 - 18:00',
     sat: '10:00 - 14:00',
