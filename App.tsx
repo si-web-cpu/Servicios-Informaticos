@@ -3,6 +3,7 @@ import React, { Suspense, lazy } from 'react';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import Chatbot from './components/Chatbot';
 
 const Home = lazy(() => import('./pages/Home'));
 const About = lazy(() => import('./pages/About'));
@@ -36,6 +37,7 @@ const App: React.FC = () => {
             </Routes>
           </Suspense>
         </main>
+        <Chatbot />
         <Footer />
       </div>
     </Router>

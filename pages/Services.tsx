@@ -35,7 +35,7 @@ const Services: React.FC = () => {
     {
       title: 'Portal Médico con Chatbot AI',
       image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80',
-      tags: ['Soporte SI AI', 'Tailwind', 'Next.js'],
+      tags: ['Gemini AI', 'Tailwind', 'Next.js'],
       description: 'Sistema de reserva de turnos con asistente virtual que triaje los síntomas básicos.',
       challenge: 'Saturación en las líneas telefónicas por consultas básicas sobre horarios y síntomas.',
       solution: 'Desarrollamos un asistente con Gemini AI capaz de agendar turnos y responder dudas frecuentes.',
@@ -62,7 +62,7 @@ const Services: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
         <ScrollReveal className="text-center mb-12">
           <h1 className="text-4xl font-bold text-slate-900 mb-4">Servicios Profesionales</h1>
-          <p className="text-slate-600 max-w-2xl mx-auto text-lg">Ofrecemos soluciones tecnológicas para que la tecnología trabaje para ti.</p>
+          <p className="text-slate-600 max-w-2xl mx-auto text-lg">Ofrecemos un abanico completo de soluciones para que la tecnología sea tu aliada y no un problema.</p>
         </ScrollReveal>
 
         <ScrollReveal variant="scale" delay={100} className="flex justify-center gap-4 mb-12">
@@ -70,13 +70,13 @@ const Services: React.FC = () => {
             <button
               key={f}
               onClick={() => setFilter(f as any)}
-              className={`px-6 py-2 rounded-full font-bold text-sm transition-all ${
+              className={`px-6 py-2 rounded-full font-medium transition-all ${
                 filter === f 
                   ? 'bg-blue-600 text-white shadow-lg' 
                   : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
               }`}
             >
-              {f === 'todos' ? 'Ver Todos' : f === 'hogar' ? '🏠 Hogar' : '🏢 Negocios'}
+              {f.charAt(0).toUpperCase() + f.slice(1)}
             </button>
           ))}
         </ScrollReveal>
@@ -88,16 +88,14 @@ const Services: React.FC = () => {
                 <div className="w-16 h-16 bg-slate-50 text-blue-600 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:bg-blue-600 group-hover:text-white transition-colors">
                   <i className={`fa-solid ${service.icon}`}></i>
                 </div>
-                <div className={`inline-block px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full mb-4 w-fit ${
-                  service.category === 'negocios' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'
-                }`}>
-                  {service.category === 'negocios' ? 'Para Negocios' : 'Para el Hogar'}
+                <div className="inline-block px-3 py-1 bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-wider rounded-full mb-4 w-fit">
+                  {service.category === 'negocios' ? 'Negocios' : 'Hogar'}
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-slate-900">{service.title}</h3>
-                <p className="text-slate-600 leading-relaxed mb-4 text-sm">{service.desc}</p>
+                <p className="text-slate-600 leading-relaxed mb-4">{service.desc}</p>
                 {service.info && (
-                  <div className="mt-auto pt-4 border-t border-slate-50 italic text-xs text-slate-400">
-                    {service.info}
+                  <div className="mt-auto pt-4 border-t border-slate-50">
+                    <p className="text-sm text-slate-500 italic leading-snug">{service.info}</p>
                   </div>
                 )}
               </div>
@@ -120,7 +118,7 @@ const Services: React.FC = () => {
                   <div className="p-8 flex flex-col flex-grow">
                     <h4 className="text-xl font-bold text-slate-900 mb-3">{project.title}</h4>
                     <p className="text-slate-600 text-sm mb-6 flex-grow">{project.description}</p>
-                    <button onClick={() => openModal(project)} className="text-blue-600 font-bold text-sm flex items-center gap-2 hover:underline">Ver Detalle <i className="fa-solid fa-arrow-right"></i></button>
+                    <button onClick={() => openModal(project)} className="text-blue-600 font-bold text-sm flex items-center gap-2">Ver Detalle <i className="fa-solid fa-arrow-right"></i></button>
                   </div>
                 </div>
               </ScrollReveal>
@@ -131,24 +129,15 @@ const Services: React.FC = () => {
 
       {selectedProject && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" onClick={closeModal}>
-          <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-in zoom-in duration-300" onClick={e => e.stopPropagation()}>
+          <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
             <div className="p-8">
               <h2 className="text-3xl font-bold mb-6">{selectedProject.title}</h2>
               <div className="space-y-6">
-                <div className="bg-slate-50 p-6 rounded-2xl">
-                  <h4 className="font-bold text-blue-600 uppercase text-xs tracking-widest mb-2">Desafío</h4>
-                  <p className="text-slate-700">{selectedProject.challenge}</p>
-                </div>
-                <div>
-                  <h4 className="font-bold text-blue-600 uppercase text-xs tracking-widest mb-2">Solución Técnica</h4>
-                  <p className="text-slate-700">{selectedProject.solution}</p>
-                </div>
-                <div className="bg-green-50 p-6 rounded-2xl border-l-4 border-green-500">
-                  <h4 className="font-bold text-green-700 uppercase text-xs tracking-widest mb-1">Impacto Logrado</h4>
-                  <p className="text-green-800 font-medium">{selectedProject.result}</p>
-                </div>
+                <div><h4 className="font-bold text-blue-600 uppercase text-xs tracking-widest mb-2">Desafío</h4><p>{selectedProject.challenge}</p></div>
+                <div><h4 className="font-bold text-blue-600 uppercase text-xs tracking-widest mb-2">Solución</h4><p>{selectedProject.solution}</p></div>
+                <div className="bg-slate-50 p-4 rounded-xl font-medium border-l-4 border-green-500">Resultados: {selectedProject.result}</div>
               </div>
-              <button onClick={closeModal} className="mt-8 w-full bg-slate-900 text-white py-4 rounded-xl font-bold shadow-lg shadow-slate-200">Cerrar Detalle</button>
+              <button onClick={closeModal} className="mt-8 w-full bg-slate-900 text-white py-3 rounded-xl font-bold">Cerrar</button>
             </div>
           </div>
         </div>

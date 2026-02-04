@@ -22,9 +22,9 @@ const Navbar: React.FC = () => {
         <div className="flex justify-between h-16 items-center">
           <div className="flex-shrink-0 flex items-center gap-2">
             <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white text-xl font-bold">
-              S
+              N
             </div>
-            <span className="text-xl font-bold text-slate-800 tracking-tight">Servicios <span className="text-blue-600">Informáticos</span></span>
+            <span className="text-xl font-bold text-slate-800 tracking-tight">Nexus <span className="text-blue-600">IT</span></span>
           </div>
           
           <div className="hidden md:block">

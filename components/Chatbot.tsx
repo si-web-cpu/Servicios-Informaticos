@@ -10,7 +10,7 @@ interface Message {
 const Chatbot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'model', text: '¡Hola! Soy tu asistente de Soporte SI. ¿En qué puedo ayudarte hoy con tus dispositivos o red?' }
+    { role: 'model', text: '¡Hola! Soy NexusAI. ¿En qué puedo ayudarte hoy con tus dispositivos o red?' }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -50,7 +50,7 @@ const Chatbot: React.FC = () => {
                 <i className="fa-solid fa-robot"></i>
               </div>
               <div>
-                <h3 className="font-semibold text-sm">Soporte SI AI</h3>
+                <h3 className="font-semibold text-sm">Asistente NexusAI</h3>
                 <p className="text-[10px] opacity-80">En línea ahora</p>
               </div>
             </div>

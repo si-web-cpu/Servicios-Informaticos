@@ -2,10 +2,9 @@
 export interface Service {
   id: string;
   title: string;
-  desc: string;
+  description: string;
   icon: string;
   category: 'hogar' | 'negocios';
-  info?: string;
 }
 
 export interface NewsItem {
@@ -14,21 +13,8 @@ export interface NewsItem {
   excerpt: string;
   fullContent?: string;
   date: string;
-  image: string;
+  imageUrl: string;
   author?: string;
-}
-
-export interface ContactInfo {
-  phone: string;
-  email: string;
-  whatsapp: string;
-  facebook?: string;
-  instagram?: string;
-  hours: {
-    week: string;
-    sat: string;
-    sun: string;
-  };
 }
 
 export interface ChatMessage {

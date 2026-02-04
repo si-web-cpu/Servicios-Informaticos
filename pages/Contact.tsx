@@ -37,7 +37,7 @@ const Contact: React.FC = () => {
         if (!response.ok) throw new Error('Error al enviar. Verifica tu configuración.');
       } else {
         // MODO SIMULACIÓN si no hay endpoint (útil para testing)
-        console.warn("Servicios Informáticos: Formulario operando en modo simulación (sin endpoint configurado)");
+        console.warn("Nexus IT: Formulario operando en modo simulación (sin endpoint configurado)");
         await new Promise(resolve => setTimeout(resolve, 1500));
       }
 

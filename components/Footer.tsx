@@ -1,8 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { storageService } from '../services/storageService';
 
+// Added React import to satisfy the React.FC namespace requirement
 const Footer: React.FC = () => {
   const [contact, setContact] = useState(storageService.getContact());
 
@@ -14,6 +14,7 @@ const Footer: React.FC = () => {
     };
 
     window.addEventListener('nexus_storage_update', handleUpdate);
+    // Carga inicial por si acaso
     setContact(storageService.getContact());
 
     return () => window.removeEventListener('nexus_storage_update', handleUpdate);
@@ -25,8 +26,8 @@ const Footer: React.FC = () => {
         <div className="grid md:grid-cols-4 gap-12 mb-12">
           <div className="col-span-1 md:col-span-1">
             <div className="flex items-center gap-2 mb-6">
-              <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white font-bold">S</div>
-              <span className="text-xl font-bold text-white">Servicios Informáticos</span>
+              <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white font-bold">N</div>
+              <span className="text-xl font-bold text-white">Nexus IT</span>
             </div>
             <p className="text-sm opacity-70 leading-relaxed">
               Damos vida a tus dispositivos y conectamos tu mundo. Tu partner tecnológico de confianza para el día a día.
@@ -94,7 +95,7 @@ const Footer: React.FC = () => {
         </div>
         
         <div className="pt-8 border-t border-slate-800 text-center text-xs opacity-50">
-          <p>&copy; {new Date().getFullYear()} Servicios Informáticos. Todos los derechos reservados.</p>
+          <p>&copy; {new Date().getFullYear()} Nexus IT Soluciones. Todos los derechos reservados.</p>
         </div>
       </div>
     </footer>
