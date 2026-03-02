@@ -3,11 +3,14 @@ import { GoogleGenAI } from "@google/genai";
 
 export const getGeminiResponse = async (userMessage: string, history: { role: 'user' | 'model', parts: { text: string }[] }[], context?: string) => {
   // Try multiple sources for the API Key
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY || process.env.API_KEY;
+  const apiKey = (import.meta as any).env?.VITE_GEMINI_API_KEY || 
+                 (process as any).env?.VITE_GEMINI_API_KEY || 
+                 (process as any).env?.GEMINI_API_KEY || 
+                 (process as any).env?.API_KEY;
 
-  if (!apiKey || apiKey === "" || apiKey === "undefined" || apiKey === undefined) {
-    console.error("Falta API_KEY. Fuentes intentadas: VITE_GEMINI_API_KEY, GEMINI_API_KEY, API_KEY");
-    return "Error: No se detectó la API_KEY. Por favor, asegúrate de configurar VITE_GEMINI_API_KEY en Netlify y hacer un 'Clear cache and deploy'.";
+  if (!apiKey || apiKey === "" || apiKey === "undefined" || apiKey === "null") {
+    console.error("❌ Error de Configuración: No se encontró la clave de API de Gemini.");
+    return "Error: El servicio de IA no está configurado correctamente. Por favor, contacta al soporte técnico.";
   }
 
   try {
