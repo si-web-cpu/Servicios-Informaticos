@@ -293,13 +293,19 @@ const COLLECTIONS = {
 
 // Initialize listeners
 export const initFirestoreSync = () => {
+  console.log("Initializing Firestore real-time sync...");
   Object.values(COLLECTIONS).forEach(collectionName => {
     onSnapshot(doc(db, "app_data", collectionName), (snapshot) => {
       if (snapshot.exists()) {
+        console.log(`Firestore Update received for: ${collectionName}`);
         const data = snapshot.data().items || snapshot.data().value;
         localStorage.setItem(collectionName, JSON.stringify(data));
         notifyChange(collectionName.replace('nexus_', ''));
+      } else {
+        console.log(`No document found in Firestore for: ${collectionName}`);
       }
+    }, (error) => {
+      console.error(`Firestore Sync Error for ${collectionName}:`, error);
     });
   });
 };
@@ -362,16 +368,23 @@ export const storageService = {
   
   // Helper to upload initial data to Firestore if it's empty
   seedFirestore: async () => {
-    const q = query(collection(db, "app_data"), limit(1));
-    const snapshot = await getDocs(q);
-    if (snapshot.empty) {
-      console.log("Seeding Firestore with default data...");
-      await setDoc(doc(db, "app_data", COLLECTIONS.NEWS), { items: defaultNews });
-      await setDoc(doc(db, "app_data", COLLECTIONS.SERVICES), { items: defaultServices });
-      await setDoc(doc(db, "app_data", COLLECTIONS.CONTACT), { value: defaultContact });
-      await setDoc(doc(db, "app_data", COLLECTIONS.SETTINGS), { value: defaultSettings });
-      await setDoc(doc(db, "app_data", COLLECTIONS.APPS), { items: defaultApps });
-      await setDoc(doc(db, "app_data", COLLECTIONS.PORTFOLIO), { items: defaultPortfolio });
+    try {
+      const q = query(collection(db, "app_data"), limit(1));
+      const snapshot = await getDocs(q);
+      if (snapshot.empty) {
+        console.log("Firestore is empty. Seeding with default data...");
+        await setDoc(doc(db, "app_data", COLLECTIONS.NEWS), { items: defaultNews });
+        await setDoc(doc(db, "app_data", COLLECTIONS.SERVICES), { items: defaultServices });
+        await setDoc(doc(db, "app_data", COLLECTIONS.CONTACT), { value: defaultContact });
+        await setDoc(doc(db, "app_data", COLLECTIONS.SETTINGS), { value: defaultSettings });
+        await setDoc(doc(db, "app_data", COLLECTIONS.APPS), { items: defaultApps });
+        await setDoc(doc(db, "app_data", COLLECTIONS.PORTFOLIO), { items: defaultPortfolio });
+        console.log("Firestore seeded successfully!");
+      } else {
+        console.log("Firestore already contains data. Skipping seed.");
+      }
+    } catch (error) {
+      console.error("Error seeding Firestore:", error);
     }
   }
 };
