@@ -11,7 +11,7 @@ export const getGeminiResponse = async (userMessage: string, history: { role: 'u
 
   try {
     const ai = new GoogleGenAI({ apiKey: apiKey });
-    const modelName = 'gemini-3-flash-preview';
+    const modelName = 'gemini-flash-latest';
     
     const systemInstruction = `
       Eres el asistente inteligente de 'Servicios Informáticos'. 
