@@ -19,29 +19,23 @@ const Services: React.FC = () => {
   const [services, setServices] = useState<any[]>([]);
 
   useEffect(() => {
-    setServices(storageService.getServices());
+    const updateData = () => {
+      setServices(storageService.getServices());
+    };
+
+    updateData();
+
+    const handleUpdate = (event: any) => {
+      if (event.detail.key === 'services' || event.detail.key === 'portfolio') {
+        updateData();
+      }
+    };
+
+    window.addEventListener('nexus_storage_update', handleUpdate);
+    return () => window.removeEventListener('nexus_storage_update', handleUpdate);
   }, []);
 
-  const portfolioProjects: Project[] = [
-    {
-      title: 'E-commerce Moda Sostenible',
-      image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80',
-      tags: ['React', 'Stripe', 'Node.js'],
-      description: 'Tienda online completa con pasarela de pagos y gestión de stock en tiempo real.',
-      challenge: 'La tienda perdía ventas por un proceso de checkout lento y falta de stock actualizado.',
-      solution: 'Implementamos una SPA (Single Page Application) con sincronización en tiempo real y pasarela segura.',
-      result: 'Incremento del 45% en la tasa de conversión durante los primeros 3 meses.'
-    },
-    {
-      title: 'Portal Médico con Chatbot AI',
-      image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80',
-      tags: ['Soporte SI AI', 'Tailwind', 'Next.js'],
-      description: 'Sistema de reserva de turnos con asistente virtual que triaje los síntomas básicos.',
-      challenge: 'Saturación en las líneas telefónicas por consultas básicas sobre horarios y síntomas.',
-      solution: 'Desarrollamos un asistente con Gemini AI capaz de agendar turnos y responder dudas frecuentes.',
-      result: 'Reducción del 60% en llamadas administrativas no críticas.'
-    }
-  ];
+  const portfolioProjects: Project[] = storageService.getPortfolio();
 
   const filteredServices = filter === 'todos' 
     ? services 

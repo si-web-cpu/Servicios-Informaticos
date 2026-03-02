@@ -6,7 +6,7 @@ const Admin: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState('');
   const [pass, setPass] = useState('');
-  const [activeTab, setActiveTab] = useState<'news' | 'services' | 'contact' | 'settings' | 'stats'>('news');
+  const [activeTab, setActiveTab] = useState<'news' | 'services' | 'contact' | 'settings' | 'stats' | 'apps' | 'portfolio' | 'icons'>('news');
   
   // Feedback State
   const [feedback, setFeedback] = useState<{msg: string, type: 'success' | 'error'} | null>(null);
@@ -17,11 +17,15 @@ const Admin: React.FC = () => {
   const [services, setServices] = useState(storageService.getServices());
   const [contact, setContact] = useState(storageService.getContact());
   const [settings, setSettings] = useState(storageService.getSettings());
+  const [apps, setApps] = useState(storageService.getApps());
+  const [portfolio, setPortfolio] = useState(storageService.getPortfolio());
   const [rawVisits, setRawVisits] = useState<number | null>(null);
 
   // Form States
   const [editItem, setEditItem] = useState<any>(null);
   const [editService, setEditService] = useState<any>(null);
+  const [editApp, setEditApp] = useState<any>(null);
+  const [editPortfolio, setEditPortfolio] = useState<any>(null);
 
   const BASE_VISITS = 1248;
 
@@ -49,13 +53,14 @@ const Admin: React.FC = () => {
     }
   };
 
-  const simulateSave = async (saveFn: () => void, successMsg: string) => {
+  const simulateSave = async (saveFn: () => Promise<void> | void, successMsg: string) => {
     setIsSaving(true);
     try {
       await new Promise(resolve => setTimeout(resolve, 800));
-      saveFn();
+      await saveFn();
       showFeedback(successMsg, 'success');
     } catch (err) {
+      console.error(err);
       showFeedback('Error al procesar la solicitud', 'error');
     } finally {
       setIsSaving(false);
@@ -64,7 +69,7 @@ const Admin: React.FC = () => {
 
   const handleSaveNews = (e: React.FormEvent) => {
     e.preventDefault();
-    simulateSave(() => {
+    simulateSave(async () => {
       let updated;
       if (editItem.id) {
         updated = news.map((n: any) => n.id === editItem.id ? editItem : n);
@@ -72,23 +77,23 @@ const Admin: React.FC = () => {
         updated = [{ ...editItem, id: Date.now().toString() }, ...news];
       }
       setNews(updated);
-      storageService.saveNews(updated);
+      await storageService.saveNews(updated);
       setEditItem(null);
     }, 'Noticia guardada exitosamente');
   };
 
   const handleDeleteNews = (id: string) => {
     if (!window.confirm('¿Seguro que deseas eliminar esta noticia?')) return;
-    simulateSave(() => {
+    simulateSave(async () => {
       const updated = news.filter((n: any) => n.id !== id);
       setNews(updated);
-      storageService.saveNews(updated);
+      await storageService.saveNews(updated);
     }, 'Noticia eliminada');
   };
 
   const handleSaveService = (e: React.FormEvent) => {
     e.preventDefault();
-    simulateSave(() => {
+    simulateSave(async () => {
       let updated;
       if (editService.id) {
         updated = services.map((s: any) => s.id === editService.id ? editService : s);
@@ -96,31 +101,79 @@ const Admin: React.FC = () => {
         updated = [...services, { ...editService, id: Date.now().toString() }];
       }
       setServices(updated);
-      storageService.saveServices(updated);
+      await storageService.saveServices(updated);
       setEditService(null);
     }, 'Servicio actualizado en el catálogo');
   };
 
   const handleDeleteService = (id: string) => {
     if (!window.confirm('¿Seguro que deseas eliminar este servicio?')) return;
-    simulateSave(() => {
+    simulateSave(async () => {
       const updated = services.filter((s: any) => s.id !== id);
       setServices(updated);
-      storageService.saveServices(updated);
+      await storageService.saveServices(updated);
     }, 'Servicio retirado');
+  };
+
+  const handleSaveApp = (e: React.FormEvent) => {
+    e.preventDefault();
+    simulateSave(async () => {
+      let updated;
+      if (editApp.id) {
+        updated = apps.map((a: any) => a.id === editApp.id ? editApp : a);
+      } else {
+        updated = [...apps, { ...editApp, id: Date.now().toString() }];
+      }
+      setApps(updated);
+      await storageService.saveApps(updated);
+      setEditApp(null);
+    }, 'Aplicación actualizada en la lista');
+  };
+
+  const handleDeleteApp = (id: string) => {
+    if (!window.confirm('¿Seguro que deseas eliminar esta aplicación?')) return;
+    simulateSave(async () => {
+      const updated = apps.filter((a: any) => a.id !== id);
+      setApps(updated);
+      await storageService.saveApps(updated);
+    }, 'Aplicación eliminada');
+  };
+
+  const handleSavePortfolio = (e: React.FormEvent) => {
+    e.preventDefault();
+    simulateSave(async () => {
+      let updated;
+      if (editPortfolio.id) {
+        updated = portfolio.map((p: any) => p.id === editPortfolio.id ? editPortfolio : p);
+      } else {
+        updated = [...portfolio, { ...editPortfolio, id: Date.now().toString() }];
+      }
+      setPortfolio(updated);
+      await storageService.savePortfolio(updated);
+      setEditPortfolio(null);
+    }, 'Caso de éxito actualizado');
+  };
+
+  const handleDeletePortfolio = (id: string) => {
+    if (!window.confirm('¿Seguro que deseas eliminar este caso de éxito?')) return;
+    simulateSave(async () => {
+      const updated = portfolio.filter((p: any) => p.id !== id);
+      setPortfolio(updated);
+      await storageService.savePortfolio(updated);
+    }, 'Caso de éxito eliminado');
   };
 
   const handleSaveContact = (e: React.FormEvent) => {
     e.preventDefault();
-    simulateSave(() => {
-      storageService.saveContact(contact);
+    simulateSave(async () => {
+      await storageService.saveContact(contact);
     }, 'Datos de contacto sincronizados');
   };
 
   const handleSaveSettings = (e: React.FormEvent) => {
     e.preventDefault();
-    simulateSave(() => {
-      storageService.saveSettings(settings);
+    simulateSave(async () => {
+      await storageService.saveSettings(settings);
     }, 'Ajustes del sistema aplicados');
   };
 
@@ -185,13 +238,13 @@ const Admin: React.FC = () => {
         </div>
 
         <div className="flex gap-4 mb-8 border-b border-slate-200 overflow-x-auto pb-1">
-          {['news', 'services', 'contact', 'settings', 'stats'].map(tab => (
+          {['news', 'services', 'apps', 'portfolio', 'contact', 'settings', 'stats', 'icons'].map(tab => (
             <button 
               key={tab} 
               onClick={() => setActiveTab(tab as any)}
               className={`pb-4 px-6 font-bold whitespace-nowrap transition-all relative ${activeTab === tab ? 'text-blue-600' : 'text-slate-400 hover:text-slate-600'}`}
             >
-              {tab === 'news' ? 'Noticias' : tab === 'services' ? 'Servicios' : tab === 'contact' ? 'Contacto' : tab === 'settings' ? 'Ajustes' : 'Estadísticas'}
+              {tab === 'news' ? 'Noticias' : tab === 'services' ? 'Servicios' : tab === 'apps' ? 'Apps' : tab === 'portfolio' ? 'Casos Éxito' : tab === 'contact' ? 'Contacto' : tab === 'settings' ? 'Ajustes' : tab === 'stats' ? 'Estadísticas' : 'Iconos'}
               {activeTab === tab && <div className="absolute bottom-0 left-0 right-0 h-1 bg-blue-600 rounded-t-full"></div>}
             </button>
           ))}
@@ -261,9 +314,73 @@ const Admin: React.FC = () => {
           </div>
         )}
 
+        {activeTab === 'apps' && (
+          <div className="space-y-6">
+            <button onClick={() => setEditApp({ name: '', description: '', url: '', icon: 'fa-box', category: 'utilidad' })} className="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-100 flex items-center gap-2">
+              <i className="fa-solid fa-plus"></i> Nueva Aplicación
+            </button>
+            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-slate-50 border-b border-slate-200">
+                  <tr>
+                    <th className="px-6 py-4 font-bold text-slate-700">Aplicación</th>
+                    <th className="px-6 py-4 font-bold text-slate-700">Categoría</th>
+                    <th className="px-6 py-4 text-right font-bold text-slate-700">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {apps.map((a: any) => (
+                    <tr key={a.id} className="hover:bg-slate-50/50 transition-colors">
+                      <td className="px-6 py-4 font-medium text-slate-800">{a.name}</td>
+                      <td className="px-6 py-4 capitalize">
+                        <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase bg-slate-100 text-slate-600">
+                          {a.category}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-right space-x-3">
+                        <button onClick={() => setEditApp(a)} className="text-blue-600 font-bold hover:underline">Editar</button>
+                        <button onClick={() => handleDeleteApp(a.id)} className="text-red-600 font-bold hover:underline">Borrar</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'portfolio' && (
+          <div className="space-y-6">
+            <button onClick={() => setEditPortfolio({ title: '', image: '', tags: [], description: '', challenge: '', solution: '', result: '' })} className="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-100 flex items-center gap-2">
+              <i className="fa-solid fa-plus"></i> Nuevo Caso de Éxito
+            </button>
+            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-slate-50 border-b border-slate-200">
+                  <tr>
+                    <th className="px-6 py-4 font-bold text-slate-700">Proyecto</th>
+                    <th className="px-6 py-4 text-right font-bold text-slate-700">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {portfolio.map((p: any) => (
+                    <tr key={p.id} className="hover:bg-slate-50/50 transition-colors">
+                      <td className="px-6 py-4 font-medium text-slate-800">{p.title}</td>
+                      <td className="px-6 py-4 text-right space-x-3">
+                        <button onClick={() => setEditPortfolio(p)} className="text-blue-600 font-bold hover:underline">Editar</button>
+                        <button onClick={() => handleDeletePortfolio(p.id)} className="text-red-600 font-bold hover:underline">Borrar</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
         {activeTab === 'contact' && (
           <div className="bg-white p-10 rounded-3xl border border-slate-200 shadow-sm max-w-2xl">
-            <h2 className="text-2xl font-bold mb-6 text-slate-800">Información de Contacto y Redes</h2>
+            <h2 className="text-2xl font-bold mb-6 text-slate-800">Información de Contacto y Horarios</h2>
             <form onSubmit={handleSaveContact} className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-1">
@@ -278,6 +395,34 @@ const Admin: React.FC = () => {
               <div className="space-y-1">
                 <label className="text-[10px] font-bold text-slate-400 uppercase ml-1 tracking-wider">WhatsApp (Números sin +, ej: 549351...)</label>
                 <input type="text" className="w-full border p-3 rounded-xl bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500 transition-all" value={contact.whatsapp} onChange={e => setContact({...contact, whatsapp: e.target.value})} />
+              </div>
+
+              <div className="pt-6 border-t border-slate-100 space-y-4">
+                <h3 className="text-sm font-bold text-slate-700">Horarios de Atención</h3>
+                <div className="flex items-center gap-3 mb-4">
+                  <input 
+                    type="checkbox" 
+                    id="appointmentOnly"
+                    checked={contact.appointmentOnly} 
+                    onChange={e => setContact({...contact, appointmentOnly: e.target.checked})}
+                    className="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <label htmlFor="appointmentOnly" className="text-sm font-medium text-slate-700">Atención solo con cita previa</label>
+                </div>
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase ml-1 tracking-wider">Lunes a Viernes</label>
+                    <input type="text" className="w-full border p-3 rounded-xl bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500 transition-all" value={contact.hours.week} onChange={e => setContact({...contact, hours: {...contact.hours, week: e.target.value}})} />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase ml-1 tracking-wider">Sábados</label>
+                    <input type="text" className="w-full border p-3 rounded-xl bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500 transition-all" value={contact.hours.sat} onChange={e => setContact({...contact, hours: {...contact.hours, sat: e.target.value}})} />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase ml-1 tracking-wider">Domingos</label>
+                    <input type="text" className="w-full border p-3 rounded-xl bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500 transition-all" value={contact.hours.sun} onChange={e => setContact({...contact, hours: {...contact.hours, sun: e.target.value}})} />
+                  </div>
+                </div>
               </div>
               
               <div className="pt-6 border-t border-slate-100 space-y-4">
@@ -370,6 +515,84 @@ const Admin: React.FC = () => {
           </div>
         )}
 
+        {activeTab === 'icons' && (
+          <div className="bg-white p-10 rounded-3xl border border-slate-200 shadow-sm">
+            <h2 className="text-2xl font-bold mb-4 text-slate-800">Guía de Iconos (FontAwesome)</h2>
+            <p className="text-slate-500 mb-8">Copia y pega estas clases en el campo "Icono" al editar servicios o aplicaciones.</p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+              {[
+                { class: 'fa-laptop-medical', name: 'Soporte PC' },
+                { class: 'fa-wifi', name: 'Wi-Fi' },
+                { class: 'fa-microchip', name: 'Hardware' },
+                { class: 'fa-network-wired', name: 'Redes' },
+                { class: 'fa-wand-magic-sparkles', name: 'Magia/IA' },
+                { class: 'fa-database', name: 'Base de Datos' },
+                { class: 'fa-shield-halved', name: 'Seguridad' },
+                { class: 'fa-download', name: 'Descargas' },
+                { class: 'fa-file-zipper', name: 'Compresión' },
+                { class: 'fa-play-circle', name: 'Multimedia' },
+                { class: 'fa-pen-to-square', name: 'Edición' },
+                { class: 'fa-box', name: 'Caja/App' },
+                { class: 'fa-gears', name: 'Ajustes' },
+                { class: 'fa-server', name: 'Servidor' },
+                { class: 'fa-cloud', name: 'Nube' },
+                { class: 'fa-code', name: 'Código' },
+                { class: 'fa-bug', name: 'Errores' },
+                { class: 'fa-bolt', name: 'Rápido' }
+              ].map(icon => (
+                <div key={icon.class} className="flex flex-col items-center p-4 border rounded-2xl hover:bg-slate-50 transition-colors">
+                  <i className={`fa-solid ${icon.class} text-2xl text-blue-600 mb-3`}></i>
+                  <span className="text-[10px] font-mono text-slate-400 text-center">{icon.class}</span>
+                  <span className="text-xs font-bold text-slate-700 mt-1">{icon.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* MODAL PORTFOLIO */}
+        {editPortfolio && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 overflow-y-auto">
+            <div className="bg-white p-10 rounded-3xl w-full max-w-2xl shadow-2xl my-8 animate-in zoom-in duration-200">
+              <h2 className="text-2xl font-bold mb-6 text-slate-900 flex items-center gap-3">
+                <i className="fa-solid fa-star text-blue-600"></i> Caso de Éxito
+              </h2>
+              <form onSubmit={handleSavePortfolio} className="space-y-4">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Título del Proyecto</label>
+                  <input type="text" required className="w-full border p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" value={editPortfolio.title} onChange={e => setEditPortfolio({...editPortfolio, title: e.target.value})} />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">URL de la Imagen</label>
+                  <input type="text" required className="w-full border p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" value={editPortfolio.image} onChange={e => setEditPortfolio({...editPortfolio, image: e.target.value})} />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Descripción Corta</label>
+                  <textarea required className="w-full border p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 resize-none" rows={2} value={editPortfolio.description} onChange={e => setEditPortfolio({...editPortfolio, description: e.target.value})} />
+                </div>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Desafío</label>
+                    <textarea required className="w-full border p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 resize-none" rows={3} value={editPortfolio.challenge} onChange={e => setEditPortfolio({...editPortfolio, challenge: e.target.value})} />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Solución</label>
+                    <textarea required className="w-full border p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 resize-none" rows={3} value={editPortfolio.solution} onChange={e => setEditPortfolio({...editPortfolio, solution: e.target.value})} />
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Resultado/Impacto</label>
+                  <input type="text" required className="w-full border p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" value={editPortfolio.result} onChange={e => setEditPortfolio({...editPortfolio, result: e.target.value})} />
+                </div>
+                <div className="flex gap-4 pt-6">
+                  <button type="submit" className="flex-1 bg-blue-600 text-white py-4 rounded-xl font-bold shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all">Guardar</button>
+                  <button type="button" onClick={() => setEditPortfolio(null)} className="flex-1 bg-slate-100 text-slate-600 py-4 rounded-xl font-bold hover:bg-slate-200 transition-all">Cancelar</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
         {/* MODAL NOTICIAS */}
         {editItem && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 overflow-y-auto">
@@ -403,6 +626,54 @@ const Admin: React.FC = () => {
           </div>
         )}
 
+        {/* MODAL APLICACIONES */}
+        {editApp && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+            <div className="bg-white p-10 rounded-3xl w-full max-w-xl shadow-2xl animate-in zoom-in duration-200">
+              <h2 className="text-2xl font-bold mb-6 text-slate-900 flex items-center gap-3">
+                <i className="fa-solid fa-box text-blue-600"></i> Gestionar Aplicación
+              </h2>
+              <form onSubmit={handleSaveApp} className="space-y-4">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nombre</label>
+                    <input type="text" required className="w-full border p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" value={editApp.name} onChange={e => setEditApp({...editApp, name: e.target.value})} />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Categoría</label>
+                    <select 
+                      className="w-full border p-3 rounded-xl bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500"
+                      value={editApp.category}
+                      onChange={e => setEditApp({...editApp, category: e.target.value})}
+                    >
+                      <option value="utilidad">Utilidad</option>
+                      <option value="multimedia">Multimedia</option>
+                      <option value="seguridad">Seguridad</option>
+                      <option value="otros">Otros</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">URL de Descarga</label>
+                  <input type="url" required className="w-full border p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" value={editApp.url} onChange={e => setEditApp({...editApp, url: e.target.value})} />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Icono (FontAwesome class, ej: fa-box)</label>
+                  <input type="text" required className="w-full border p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" value={editApp.icon} onChange={e => setEditApp({...editApp, icon: e.target.value})} />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Descripción Corta</label>
+                  <textarea required className="w-full border p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 resize-none" rows={3} value={editApp.description} onChange={e => setEditApp({...editApp, description: e.target.value})} />
+                </div>
+                <div className="flex gap-4 pt-6">
+                  <button type="submit" className="flex-1 bg-blue-600 text-white py-4 rounded-xl font-bold shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all">Guardar</button>
+                  <button type="button" onClick={() => setEditApp(null)} className="flex-1 bg-slate-100 text-slate-600 py-4 rounded-xl font-bold hover:bg-slate-200 transition-all">Cancelar</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
         {/* MODAL SERVICIOS */}
         {editService && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
@@ -425,6 +696,10 @@ const Admin: React.FC = () => {
                     <option value="hogar">Uso Residencial (Hogar)</option>
                     <option value="negocios">Uso Profesional (Negocios)</option>
                   </select>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Icono (FontAwesome class, ej: fa-wifi)</label>
+                  <input type="text" required className="w-full border p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" value={editService.icon} onChange={e => setEditService({...editService, icon: e.target.value})} />
                 </div>
                 <div className="space-y-1">
                   <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Descripción del Servicio</label>

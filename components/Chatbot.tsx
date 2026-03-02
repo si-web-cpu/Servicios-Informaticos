@@ -1,6 +1,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { getGeminiResponse } from '../services/geminiService';
+import { storageService } from '../services/storageService';
 
 interface Message {
   role: 'user' | 'model';
@@ -35,7 +36,17 @@ const Chatbot: React.FC = () => {
       parts: [{ text: m.text }]
     }));
 
-    const response = await getGeminiResponse(userMsg, history);
+    const services = storageService.getServices();
+    const apps = storageService.getApps();
+    const context = `
+      SERVICIOS DISPONIBLES:
+      ${services.map((s: any) => `- ${s.title}: ${s.desc}`).join('\n')}
+      
+      APLICACIONES RECOMENDADAS:
+      ${apps.map((a: any) => `- ${a.name}: ${a.description}`).join('\n')}
+    `;
+
+    const response = await getGeminiResponse(userMsg, history, context);
     setMessages(prev => [...prev, { role: 'model', text: response }]);
     setIsLoading(false);
   };

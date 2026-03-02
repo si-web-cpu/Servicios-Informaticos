@@ -67,7 +67,20 @@ const News: React.FC = () => {
   const [copyStatus, setCopyStatus] = useState<string | null>(null);
 
   useEffect(() => {
-    setCurrentNews(storageService.getNews());
+    const updateData = () => {
+      setCurrentNews(storageService.getNews());
+    };
+
+    updateData();
+
+    const handleUpdate = (event: any) => {
+      if (event.detail.key === 'news') {
+        updateData();
+      }
+    };
+
+    window.addEventListener('nexus_storage_update', handleUpdate);
+    return () => window.removeEventListener('nexus_storage_update', handleUpdate);
   }, []);
 
   const handleShare = async (item: any) => {

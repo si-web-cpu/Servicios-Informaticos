@@ -1,24 +1,31 @@
 
 import { GoogleGenAI } from "@google/genai";
 
-export const getGeminiResponse = async (userMessage: string, history: { role: 'user' | 'model', parts: { text: string }[] }[]) => {
+export const getGeminiResponse = async (userMessage: string, history: { role: 'user' | 'model', parts: { text: string }[] }[], context?: string) => {
   const apiKey = process.env.API_KEY;
 
   if (!apiKey || apiKey === "" || apiKey === "undefined") {
     console.error("Falta API_KEY");
-    return "Error: No se detectó la API_KEY en el entorno de Netlify. Por favor, configúrala en el panel de control del sitio.";
+    return "Error: No se detectó la API_KEY. Por favor, configúrala.";
   }
 
   try {
     const ai = new GoogleGenAI({ apiKey: apiKey });
-    // Usamos gemini-3-flash-preview como recomendado
     const modelName = 'gemini-3-flash-preview';
     
     const systemInstruction = `
-      Eres el asistente de 'Servicios Informáticos'. 
-      Brindamos soporte técnico para Windows y Linux en Hogares y Pequeños Negocios.
-      IMPORTANTE: No reparamos Apple/Mac.
-      Responde de forma concisa y profesional. Si preguntan por precios, di que dependen del caso y que usen el formulario de contacto.
+      Eres el asistente inteligente de 'Servicios Informáticos'. 
+      Tu objetivo es ayudar a los usuarios a navegar el sitio, conocer nuestros servicios y recomendar aplicaciones útiles.
+      
+      CONTEXTO DEL SITIO:
+      ${context || 'Brindamos soporte técnico para Windows y Linux en Hogares y Pequeños Negocios. No reparamos Apple/Mac.'}
+      
+      REGLAS DE COMPORTAMIENTO:
+      1. Responde de forma concisa, amable y profesional en español.
+      2. Si preguntan por precios, di que dependen del caso y que usen el formulario de contacto.
+      3. Si el usuario tiene problemas con su PC, intenta dar un consejo básico pero siempre recomienda nuestro soporte profesional.
+      4. Menciona la sección de "Aplicaciones Útiles" si el usuario busca herramientas como WinRAR, reproductores de video, o gestores de descarga.
+      5. No inventes servicios que no estén en el contexto.
     `;
 
     const response = await ai.models.generateContent({

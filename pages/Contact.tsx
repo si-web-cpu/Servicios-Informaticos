@@ -80,7 +80,12 @@ const Contact: React.FC = () => {
             </ScrollReveal>
 
             <ScrollReveal variant="left" delay={200}>
-              <div className="bg-blue-600 p-8 rounded-3xl text-white">
+              <div className="bg-blue-600 p-8 rounded-3xl text-white relative overflow-hidden">
+                {contactInfo.appointmentOnly && (
+                  <div className="absolute top-4 right-[-35px] bg-yellow-400 text-yellow-900 text-[10px] font-black uppercase py-1 px-10 rotate-45 shadow-lg">
+                    Solo Citas
+                  </div>
+                )}
                 <h4 className="text-xl font-bold mb-4">Horario de Atención</h4>
                 <ul className="space-y-3 opacity-90 text-sm">
                   <li className="flex justify-between border-b border-white/20 pb-2"><span>Lun a Vie</span><span>{contactInfo.hours.week}</span></li>

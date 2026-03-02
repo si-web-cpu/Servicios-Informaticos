@@ -5,7 +5,18 @@ import ScrollReveal from '../components/ScrollReveal';
 import { storageService } from '../services/storageService';
 
 const Home: React.FC = () => {
-  const contact = storageService.getContact();
+  const [contact, setContact] = React.useState(storageService.getContact());
+
+  React.useEffect(() => {
+    const handleUpdate = (event: any) => {
+      if (event.detail.key === 'contact') {
+        setContact(storageService.getContact());
+      }
+    };
+
+    window.addEventListener('nexus_storage_update', handleUpdate);
+    return () => window.removeEventListener('nexus_storage_update', handleUpdate);
+  }, []);
 
   return (
     <div className="pt-16">
