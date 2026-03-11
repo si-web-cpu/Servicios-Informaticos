@@ -364,19 +364,23 @@ export const storageService = {
   
   // Helper to upload initial data to Firestore if it's empty
   seedFirestore: async () => {
+    console.log("🚀 Iniciando siembra de Firestore...");
     try {
       const q = query(collection(db, "app_data"), limit(1));
       const snapshot = await getDocs(q);
+      console.log("📊 Estado de la base de datos:", snapshot.empty ? "Vacía" : "Con datos");
       if (snapshot.empty) {
+        console.log("📝 Insertando datos por defecto...");
         await setDoc(doc(db, "app_data", COLLECTIONS.NEWS), { items: defaultNews });
         await setDoc(doc(db, "app_data", COLLECTIONS.SERVICES), { items: defaultServices });
         await setDoc(doc(db, "app_data", COLLECTIONS.CONTACT), { value: defaultContact });
         await setDoc(doc(db, "app_data", COLLECTIONS.SETTINGS), { value: defaultSettings });
         await setDoc(doc(db, "app_data", COLLECTIONS.APPS), { items: defaultApps });
         await setDoc(doc(db, "app_data", COLLECTIONS.PORTFOLIO), { items: defaultPortfolio });
+        console.log("✅ Siembra completada con éxito");
       }
     } catch (error) {
-      console.error("Error seeding Firestore:", error);
+      console.error("❌ Error al conectar o sembrar Firestore:", error);
     }
   }
 };
