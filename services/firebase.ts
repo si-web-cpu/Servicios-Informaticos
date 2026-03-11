@@ -11,11 +11,5 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
-console.log("📡 Configuración de Firebase cargada para el proyecto:", firebaseConfig.projectId || "¡VACÍO!");
-
-if (!firebaseConfig.apiKey) {
-  console.error("⚠️ ¡ALERTA! No se detectó la API Key de Firebase. Revisa las variables de entorno en Vercel.");
-}
-
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
