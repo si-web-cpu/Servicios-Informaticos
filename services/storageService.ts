@@ -369,18 +369,34 @@ export const storageService = {
       const q = query(collection(db, "app_data"), limit(1));
       const snapshot = await getDocs(q);
       console.log("📊 Estado de la base de datos:", snapshot.empty ? "Vacía" : "Con datos");
+      
       if (snapshot.empty) {
-        console.log("📝 Insertando datos por defecto...");
-        await setDoc(doc(db, "app_data", COLLECTIONS.NEWS), { items: defaultNews });
-        await setDoc(doc(db, "app_data", COLLECTIONS.SERVICES), { items: defaultServices });
-        await setDoc(doc(db, "app_data", COLLECTIONS.CONTACT), { value: defaultContact });
-        await setDoc(doc(db, "app_data", COLLECTIONS.SETTINGS), { value: defaultSettings });
-        await setDoc(doc(db, "app_data", COLLECTIONS.APPS), { items: defaultApps });
-        await setDoc(doc(db, "app_data", COLLECTIONS.PORTFOLIO), { items: defaultPortfolio });
-        console.log("✅ Siembra completada con éxito");
+        console.log("📝 Iniciando inserción secuencial...");
+        
+        const dataToSeed = [
+          { id: COLLECTIONS.NEWS, data: { items: defaultNews }, name: 'Noticias' },
+          { id: COLLECTIONS.SERVICES, data: { items: defaultServices }, name: 'Servicios' },
+          { id: COLLECTIONS.CONTACT, data: { value: defaultContact }, name: 'Contacto' },
+          { id: COLLECTIONS.SETTINGS, data: { value: defaultSettings }, name: 'Ajustes' },
+          { id: COLLECTIONS.APPS, data: { items: defaultApps }, name: 'Aplicaciones' },
+          { id: COLLECTIONS.PORTFOLIO, data: { items: defaultPortfolio }, name: 'Portfolio' }
+        ];
+
+        for (const item of dataToSeed) {
+          console.log(`⏳ Insertando ${item.name}...`);
+          await setDoc(doc(db, "app_data", item.id), item.data);
+          console.log(`✅ ${item.name} insertado.`);
+        }
+        
+        console.log("🎉 ¡Toda la base de datos ha sido restaurada con éxito!");
+      } else {
+        console.log("ℹ️ La base de datos ya tiene información, no es necesario sembrar.");
       }
-    } catch (error) {
-      console.error("❌ Error al conectar o sembrar Firestore:", error);
+    } catch (error: any) {
+      console.error("❌ Error crítico en Firestore:", error);
+      if (error.code === 'permission-denied') {
+        console.error("👉 El error es de PERMISOS. Revisa las 'Rules' en tu consola de Firebase.");
+      }
     }
   }
 };
