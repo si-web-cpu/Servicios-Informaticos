@@ -37,6 +37,60 @@
         .reveal-scale { transform: scale(0.95); }
         .reveal-left.active, .reveal-right.active { transform: translateX(0); }
         .reveal-scale.active { transform: scale(1); }
+        /* Markdown Content Styles */
+        .markdown-content {
+            line-height: 1.8;
+        }
+        .markdown-content p {
+            margin-bottom: 1.5rem;
+        }
+        .markdown-content strong {
+            font-weight: 700;
+            color: #0f172a;
+        }
+        .markdown-content em {
+            font-style: italic;
+        }
+        .markdown-content u {
+            text-decoration: underline;
+        }
+        .markdown-content a {
+            color: #2563eb;
+            font-weight: 600;
+            text-decoration: underline;
+        }
+        .markdown-content a:hover {
+            color: #1d4ed8;
+        }
+        .markdown-content ul, .markdown-content ol {
+            margin-bottom: 1.5rem;
+            padding-left: 1.5rem;
+        }
+        .markdown-content ul {
+            list-style-type: disc;
+        }
+        .markdown-content ol {
+            list-style-type: decimal;
+        }
+        .markdown-content li {
+            margin-bottom: 0.5rem;
+        }
+        .markdown-content h1, .markdown-content h2, .markdown-content h3 {
+            font-weight: 700;
+            color: #0f172a;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+        .markdown-content h1 { font-size: 1.875rem; }
+        .markdown-content h2 { font-size: 1.5rem; }
+        .markdown-content h3 { font-size: 1.25rem; }
+        .markdown-content blockquote {
+            border-left: 4px solid #e2e8f0;
+            padding-left: 1rem;
+            font-style: italic;
+            color: #475569;
+            margin: 1.5rem 0;
+        }
     </style>
     <!-- Shim para evitar el error "process is not defined" en hosting estático -->
     <script>
@@ -48,18 +102,21 @@
     </script>
 
 <link rel="stylesheet" href="/index.css">
-<script type="importmap">
-{
-  "imports": {
-    "react-router-dom": "https://esm.sh/react-router-dom@^7.12.0",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3",
-    "@google/genai": "https://esm.sh/@google/genai@^1.37.0",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
-  }
-}
-</script>
-  <script type="module" crossorigin src="/assets/index-CHGbxjaG.js"></script>
+    <script type="importmap">
+    {
+      "imports": {
+        "react-router-dom": "https://esm.sh/react-router-dom@^7.12.0",
+        "react/": "https://esm.sh/react@^19.2.3/",
+        "react": "https://esm.sh/react@^19.2.3",
+        "@google/genai": "https://esm.sh/@google/genai@^1.37.0",
+        "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+        "react-markdown": "https://esm.sh/react-markdown@^9.0.0",
+        "remark-gfm": "https://esm.sh/remark-gfm@^4.0.0",
+        "rehype-raw": "https://esm.sh/rehype-raw@^7.0.0"
+      }
+    }
+    </script>
+  <script type="module" crossorigin src="/assets/index-Dl-klvFk.js"></script>
 </head>
 <body class="bg-slate-50 text-slate-900">
     <div id="root"></div>

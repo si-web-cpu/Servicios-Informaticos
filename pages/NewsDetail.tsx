@@ -3,6 +3,9 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import ScrollReveal from '../components/ScrollReveal';
 import { storageService } from '../services/storageService';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 
 const NewsDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -44,6 +47,7 @@ const NewsDetail: React.FC = () => {
           src={article.image} 
           alt={article.title} 
           className="w-full h-full object-cover"
+          referrerPolicy="no-referrer"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex items-end">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 w-full">
@@ -78,8 +82,27 @@ const NewsDetail: React.FC = () => {
               <p className="text-xl text-slate-600 leading-relaxed mb-8 font-medium italic border-l-4 border-blue-100 pl-6">
                 {article.excerpt}
               </p>
-              <div className="text-slate-800 leading-relaxed space-y-6 text-lg whitespace-pre-line">
-                {article.fullContent || 'Este artículo no tiene contenido extendido disponible.'}
+              <div className="text-slate-800 leading-relaxed space-y-6 text-lg markdown-content">
+                {article.fullContent ? (
+                  <ReactMarkdown 
+                    remarkPlugins={[remarkGfm]} 
+                    rehypePlugins={[rehypeRaw]}
+                    components={{
+                      strong: ({node, ...props}) => <strong className="font-bold text-slate-900" {...props} />,
+                      em: ({node, ...props}) => <em className="italic" {...props} />,
+                      u: ({node, ...props}) => <u className="underline" {...props} />,
+                      a: ({node, ...props}) => <a className="text-blue-600 hover:underline font-bold" {...props} />,
+                      img: ({node, ...props}) => <img className="w-full rounded-2xl my-8 shadow-lg" referrerPolicy="no-referrer" {...props} />,
+                      p: ({node, ...props}) => <p className="mb-4" {...props} />,
+                      ul: ({node, ...props}) => <ul className="list-disc pl-6 mb-4" {...props} />,
+                      li: ({node, ...props}) => <li className="mb-2" {...props} />,
+                    }}
+                  >
+                    {article.fullContent}
+                  </ReactMarkdown>
+                ) : (
+                  'Este artículo no tiene contenido extendido disponible.'
+                )}
               </div>
             </ScrollReveal>
 

@@ -1,6 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { storageService } from '../services/storageService';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 
 const Admin: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -614,8 +617,110 @@ const Admin: React.FC = () => {
                   <textarea required className="w-full border p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 resize-none" rows={2} value={editItem.excerpt} onChange={e => setEditItem({...editItem, excerpt: e.target.value})} />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Cuerpo Completo del Artículo</label>
-                  <textarea required className="w-full border p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 resize-none" rows={6} value={editItem.fullContent} onChange={e => setEditItem({...editItem, fullContent: e.target.value})} />
+                  <div className="flex justify-between items-center">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Cuerpo Completo del Artículo</label>
+                    <div className="flex gap-2 mb-1">
+                      <button 
+                        type="button"
+                        onClick={() => {
+                          const textarea = document.getElementById('news-content') as HTMLTextAreaElement;
+                          const start = textarea.selectionStart;
+                          const end = textarea.selectionEnd;
+                          const text = textarea.value;
+                          const selected = text.substring(start, end) || 'texto';
+                          const newText = text.substring(0, start) + `**${selected}**` + text.substring(end);
+                          setEditItem({...editItem, fullContent: newText});
+                        }}
+                        className="px-2 py-1 bg-slate-100 hover:bg-slate-200 rounded text-[10px] font-bold text-slate-600 transition-colors"
+                        title="Negrita"
+                      >
+                        <i className="fa-solid fa-bold"></i>
+                      </button>
+                      <button 
+                        type="button"
+                        onClick={() => {
+                          const textarea = document.getElementById('news-content') as HTMLTextAreaElement;
+                          const start = textarea.selectionStart;
+                          const end = textarea.selectionEnd;
+                          const text = textarea.value;
+                          const selected = text.substring(start, end) || 'texto';
+                          const newText = text.substring(0, start) + `_${selected}_` + text.substring(end);
+                          setEditItem({...editItem, fullContent: newText});
+                        }}
+                        className="px-2 py-1 bg-slate-100 hover:bg-slate-200 rounded text-[10px] font-bold text-slate-600 transition-colors"
+                        title="Itálica"
+                      >
+                        <i className="fa-solid fa-italic"></i>
+                      </button>
+                      <button 
+                        type="button"
+                        onClick={() => {
+                          const textarea = document.getElementById('news-content') as HTMLTextAreaElement;
+                          const start = textarea.selectionStart;
+                          const end = textarea.selectionEnd;
+                          const text = textarea.value;
+                          const selected = text.substring(start, end) || 'texto';
+                          const newText = text.substring(0, start) + `<u>${selected}</u>` + text.substring(end);
+                          setEditItem({...editItem, fullContent: newText});
+                        }}
+                        className="px-2 py-1 bg-slate-100 hover:bg-slate-200 rounded text-[10px] font-bold text-slate-600 transition-colors"
+                        title="Subrayado"
+                      >
+                        <i className="fa-solid fa-underline"></i>
+                      </button>
+                      <button 
+                        type="button"
+                        onClick={() => {
+                          const textarea = document.getElementById('news-content') as HTMLTextAreaElement;
+                          const start = textarea.selectionStart;
+                          const end = textarea.selectionEnd;
+                          const text = textarea.value;
+                          const selected = text.substring(start, end) || 'descripción';
+                          const newText = text.substring(0, start) + `![${selected}](https://...)` + text.substring(end);
+                          setEditItem({...editItem, fullContent: newText});
+                        }}
+                        className="px-2 py-1 bg-slate-100 hover:bg-slate-200 rounded text-[10px] font-bold text-slate-600 transition-colors"
+                        title="Imagen"
+                      >
+                        <i className="fa-solid fa-image"></i>
+                      </button>
+                      <button 
+                        type="button"
+                        onClick={() => {
+                          const textarea = document.getElementById('news-content') as HTMLTextAreaElement;
+                          const start = textarea.selectionStart;
+                          const end = textarea.selectionEnd;
+                          const text = textarea.value;
+                          const selected = text.substring(start, end) || 'texto';
+                          const newText = text.substring(0, start) + `[${selected}](https://...)` + text.substring(end);
+                          setEditItem({...editItem, fullContent: newText});
+                        }}
+                        className="px-2 py-1 bg-slate-100 hover:bg-slate-200 rounded text-[10px] font-bold text-slate-600 transition-colors"
+                        title="Enlace"
+                      >
+                        <i className="fa-solid fa-link"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <textarea 
+                    id="news-content"
+                    required 
+                    className="w-full border p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 resize-none font-sans" 
+                    rows={8} 
+                    value={editItem.fullContent} 
+                    onChange={e => setEditItem({...editItem, fullContent: e.target.value})} 
+                  />
+                  <p className="text-[9px] text-slate-400 mt-1 italic">Puedes usar formato Markdown para enriquecer el texto.</p>
+                  
+                  {/* Vista Previa en el Editor */}
+                  <div className="mt-4 p-4 bg-slate-50 rounded-xl border border-slate-200 max-h-60 overflow-y-auto">
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Vista Previa</p>
+                    <div className="prose prose-slate max-w-none text-sm markdown-content">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+                        {editItem.fullContent || '*Sin contenido*'}
+                      </ReactMarkdown>
+                    </div>
+                  </div>
                 </div>
                 <div className="flex gap-4 pt-6">
                   <button type="submit" className="flex-1 bg-blue-600 text-white py-4 rounded-xl font-bold shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all">Guardar Cambios</button>
