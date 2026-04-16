@@ -83,9 +83,24 @@ const Admin: React.FC = () => {
         await signOut(auth);
         alert('Acceso denegado. Esta cuenta no tiene permisos de administrador.');
       }
-    } catch (error) {
-      console.error("Error en login de Google:", error);
-      alert('Error al intentar iniciar sesión con Google.');
+    } catch (error: any) {
+      console.error("Error detallado de Firebase Auth:", error);
+      
+      let errorMsg = 'Error al intentar iniciar sesión con Google.';
+      
+      if (error.code === 'auth/unauthorized-domain') {
+        errorMsg = 'Error: Dominio no autorizado. Debes agregar este dominio en la consola de Firebase (Authentication > Settings > Authorized domains).';
+      } else if (error.code === 'auth/popup-blocked') {
+        errorMsg = 'Error: El navegador bloqueó la ventana emergente. Por favor, permite las ventanas emergentes para este sitio.';
+      } else if (error.code === 'auth/operation-not-allowed') {
+        errorMsg = 'Error: El inicio de sesión con Google no está habilitado en tu proyecto de Firebase.';
+      } else if (error.code === 'auth/popup-closed-by-user') {
+        errorMsg = 'La ventana de inicio de sesión se cerró antes de completar el proceso.';
+      } else {
+        errorMsg += ` (Código: ${error.code})`;
+      }
+      
+      alert(errorMsg);
     }
   };
 
