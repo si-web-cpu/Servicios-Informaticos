@@ -54,10 +54,20 @@ const Admin: React.FC = () => {
 
   useEffect(() => {
     if (isAuthenticated && activeTab === 'stats') {
-      fetch('https://api.counterapi.dev/v1/servicios-informaticos-nexus/visits')
-        .then(res => res.json())
-        .then(data => setRawVisits(data.count))
-        .catch(() => setRawVisits(null));
+      const fetchStats = async () => {
+        try {
+          // Intentamos obtener el conteo actual
+          const res = await fetch('https://api.counterapi.dev/v1/servicios-informaticos-nexus/visits');
+          if (!res.ok) throw new Error('Error en la API');
+          const data = await res.json();
+          setRawVisits(data.count);
+        } catch (error) {
+          console.error("Error cargando estadísticas:", error);
+          // Si falla, intentamos al menos mostrar un valor base o 0 en lugar de guiones
+          setRawVisits(0);
+        }
+      };
+      fetchStats();
     }
   }, [isAuthenticated, activeTab]);
 
@@ -243,10 +253,10 @@ const Admin: React.FC = () => {
             <p className="text-slate-500 text-sm mt-1">Identifícate para gestionar el sitio</p>
           </div>
 
-          <div className="mb-6 p-4 bg-amber-50 border border-amber-100 rounded-2xl">
-            <p className="text-xs text-amber-800 leading-relaxed">
-              <i className="fa-solid fa-triangle-exclamation mr-1"></i>
-              <strong>Atención:</strong> Para guardar cambios en la base de datos, debes iniciar sesión con tu cuenta de Google autorizada.
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl">
+            <p className="text-xs text-red-800 leading-relaxed">
+              <i className="fa-solid fa-triangle-exclamation mr-1 text-red-600"></i>
+              <strong className="text-red-700">Atención Crítica:</strong> Para guardar cambios en la base de datos, <strong>DEBES</strong> iniciar sesión con tu cuenta de Google autorizada. El acceso por contraseña es solo de lectura.
             </p>
           </div>
 

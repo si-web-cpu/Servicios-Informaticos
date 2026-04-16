@@ -139,7 +139,7 @@ const Footer: React.FC = () => {
 
             {/* Versión de la Web */}
             <div className="text-[9px] uppercase tracking-[0.2em] opacity-30 hover:opacity-60 transition-opacity cursor-default">
-              <span>Versión 1.4.2</span>
+              <span>Versión 1.4.3</span>
             </div>
           </div>
         </div>
