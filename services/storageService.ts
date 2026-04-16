@@ -7,7 +7,58 @@ import {
   query,
   limit
 } from "firebase/firestore";
-import { db } from "./firebase";
+import { db, auth } from "./firebase";
+
+enum OperationType {
+  CREATE = 'create',
+  UPDATE = 'update',
+  DELETE = 'delete',
+  LIST = 'list',
+  GET = 'get',
+  WRITE = 'write',
+}
+
+interface FirestoreErrorInfo {
+  error: string;
+  operationType: OperationType;
+  path: string | null;
+  authInfo: {
+    userId: string | undefined;
+    email: string | null | undefined;
+    emailVerified: boolean | undefined;
+    isAnonymous: boolean | undefined;
+    tenantId: string | null | undefined;
+    providerInfo: {
+      providerId: string;
+      displayName: string | null;
+      email: string | null;
+      photoUrl: string | null;
+    }[];
+  }
+}
+
+function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
+  const errInfo: FirestoreErrorInfo = {
+    error: error instanceof Error ? error.message : String(error),
+    authInfo: {
+      userId: auth.currentUser?.uid,
+      email: auth.currentUser?.email,
+      emailVerified: auth.currentUser?.emailVerified,
+      isAnonymous: auth.currentUser?.isAnonymous,
+      tenantId: auth.currentUser?.tenantId,
+      providerInfo: auth.currentUser?.providerData.map(provider => ({
+        providerId: provider.providerId,
+        displayName: provider.displayName,
+        email: provider.email,
+        photoUrl: provider.photoURL
+      })) || []
+    },
+    operationType,
+    path
+  };
+  console.error('Firestore Error: ', JSON.stringify(errInfo));
+  throw new Error(JSON.stringify(errInfo));
+}
 
 const defaultNews = [
   {
@@ -301,7 +352,7 @@ export const initFirestoreSync = () => {
         notifyChange(collectionName.replace('nexus_', ''));
       }
     }, (error) => {
-      console.error(`Firestore Sync Error for ${collectionName}:`, error);
+      handleFirestoreError(error, OperationType.GET, `app_data/${collectionName}`);
     });
   });
 };
@@ -314,7 +365,11 @@ export const storageService = {
   saveNews: async (data: any[]) => {
     localStorage.setItem('nexus_news', JSON.stringify(data));
     notifyChange('news');
-    await setDoc(doc(db, "app_data", COLLECTIONS.NEWS), { items: data });
+    try {
+      await setDoc(doc(db, "app_data", COLLECTIONS.NEWS), { items: data });
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, `app_data/${COLLECTIONS.NEWS}`);
+    }
   },
   getServices: () => {
     const saved = localStorage.getItem('nexus_services');
@@ -323,7 +378,11 @@ export const storageService = {
   saveServices: async (data: any[]) => {
     localStorage.setItem('nexus_services', JSON.stringify(data));
     notifyChange('services');
-    await setDoc(doc(db, "app_data", COLLECTIONS.SERVICES), { items: data });
+    try {
+      await setDoc(doc(db, "app_data", COLLECTIONS.SERVICES), { items: data });
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, `app_data/${COLLECTIONS.SERVICES}`);
+    }
   },
   getContact: () => {
     const saved = localStorage.getItem('nexus_contact');
@@ -332,7 +391,11 @@ export const storageService = {
   saveContact: async (data: any) => {
     localStorage.setItem('nexus_contact', JSON.stringify(data));
     notifyChange('contact');
-    await setDoc(doc(db, "app_data", COLLECTIONS.CONTACT), { value: data });
+    try {
+      await setDoc(doc(db, "app_data", COLLECTIONS.CONTACT), { value: data });
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, `app_data/${COLLECTIONS.CONTACT}`);
+    }
   },
   getSettings: () => {
     const saved = localStorage.getItem('nexus_settings');
@@ -341,7 +404,11 @@ export const storageService = {
   saveSettings: async (data: any) => {
     localStorage.setItem('nexus_settings', JSON.stringify(data));
     notifyChange('settings');
-    await setDoc(doc(db, "app_data", COLLECTIONS.SETTINGS), { value: data });
+    try {
+      await setDoc(doc(db, "app_data", COLLECTIONS.SETTINGS), { value: data });
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, `app_data/${COLLECTIONS.SETTINGS}`);
+    }
   },
   getApps: () => {
     const saved = localStorage.getItem('nexus_apps');
@@ -350,7 +417,11 @@ export const storageService = {
   saveApps: async (data: any[]) => {
     localStorage.setItem('nexus_apps', JSON.stringify(data));
     notifyChange('apps');
-    await setDoc(doc(db, "app_data", COLLECTIONS.APPS), { items: data });
+    try {
+      await setDoc(doc(db, "app_data", COLLECTIONS.APPS), { items: data });
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, `app_data/${COLLECTIONS.APPS}`);
+    }
   },
   getPortfolio: () => {
     const saved = localStorage.getItem('nexus_portfolio');
@@ -359,7 +430,11 @@ export const storageService = {
   savePortfolio: async (data: any[]) => {
     localStorage.setItem('nexus_portfolio', JSON.stringify(data));
     notifyChange('portfolio');
-    await setDoc(doc(db, "app_data", COLLECTIONS.PORTFOLIO), { items: data });
+    try {
+      await setDoc(doc(db, "app_data", COLLECTIONS.PORTFOLIO), { items: data });
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, `app_data/${COLLECTIONS.PORTFOLIO}`);
+    }
   },
   
   // Helper to upload initial data to Firestore if it's empty
@@ -377,7 +452,12 @@ export const storageService = {
         await setDoc(doc(db, "app_data", COLLECTIONS.PORTFOLIO), { items: defaultPortfolio });
       }
     } catch (error) {
-      console.error("Error seeding Firestore:", error);
+      // If it's a permission error, we don't want to crash the app on seed attempt
+      if (error instanceof Error && error.message.includes('permission-denied')) {
+        console.warn("Permission denied while seeding. This is expected if not logged in as admin.");
+      } else {
+        handleFirestoreError(error, OperationType.GET, "app_data (seed)");
+      }
     }
   }
 };

@@ -1,0 +1,38 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: app_data
+    // Document ID: nexus_news, nexus_services, nexus_contact, nexus_settings, nexus_apps, nexus_portfolio
+    // Fields:
+    //   - items: array (optional) - List of objects for the specific section
+    //   - value: map (optional) - Configuration or contact data
+    //
+    // ===============================================================
+
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && 
+             (request.auth.token.email == "kakarotto.jj@gmail.com" && 
+              request.auth.token.email_verified == true);
+    }
+
+    // Rules for app_data
+    match /app_data/{documentId} {
+      // Anyone can read the content to see the website
+      allow read: if true;
+      
+      // Only the verified admin can modify the content
+      allow write: if isAdmin();
+    }
+  }
+}

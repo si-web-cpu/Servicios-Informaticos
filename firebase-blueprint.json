@@ -1,0 +1,25 @@
+{
+  "entities": {
+    "AppData": {
+      "title": "Application Data",
+      "description": "Global data for the application including news, services, and settings.",
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "description": "List of items for collections like news, services, apps, or portfolio."
+        },
+        "value": {
+          "type": "object",
+          "description": "Single object value for settings or contact info."
+        }
+      }
+    }
+  },
+  "firestore": {
+    "/app_data/{documentId}": {
+      "schema": "AppData",
+      "description": "Centralized storage for all application content."
+    }
+  }
+}

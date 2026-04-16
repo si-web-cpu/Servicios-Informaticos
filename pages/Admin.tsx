@@ -4,9 +4,13 @@ import { storageService } from '../services/storageService';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
+import { auth, googleProvider } from '../services/firebase';
+import { signInWithPopup, onAuthStateChanged, signOut } from 'firebase/auth';
 
 const Admin: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isFirebaseAuthenticated, setIsFirebaseAuthenticated] = useState(false);
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const [user, setUser] = useState('');
   const [pass, setPass] = useState('');
   const [activeTab, setActiveTab] = useState<'news' | 'services' | 'contact' | 'settings' | 'stats' | 'apps' | 'portfolio' | 'icons'>('news');
@@ -33,6 +37,22 @@ const Admin: React.FC = () => {
   const BASE_VISITS = 1248;
 
   useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user && user.email === 'kakarotto.jj@gmail.com') {
+        setIsFirebaseAuthenticated(true);
+        setCurrentUser(user);
+        // If they are logged in via Firebase, we consider them authenticated for the panel too
+        setIsAuthenticated(true);
+      } else {
+        setIsFirebaseAuthenticated(false);
+        setCurrentUser(null);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
     if (isAuthenticated && activeTab === 'stats') {
       fetch('https://api.counterapi.dev/v1/servicios-informaticos-nexus/visits')
         .then(res => res.json())
@@ -54,6 +74,24 @@ const Admin: React.FC = () => {
     } else {
       alert('Acceso denegado. Credenciales incorrectas.');
     }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      if (result.user.email !== 'kakarotto.jj@gmail.com') {
+        await signOut(auth);
+        alert('Acceso denegado. Esta cuenta no tiene permisos de administrador.');
+      }
+    } catch (error) {
+      console.error("Error en login de Google:", error);
+      alert('Error al intentar iniciar sesión con Google.');
+    }
+  };
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    setIsAuthenticated(false);
   };
 
   const simulateSave = async (saveFn: () => Promise<void> | void, successMsg: string) => {
@@ -189,6 +227,28 @@ const Admin: React.FC = () => {
             <h1 className="text-2xl font-bold text-slate-900">Panel de Control</h1>
             <p className="text-slate-500 text-sm mt-1">Identifícate para gestionar el sitio</p>
           </div>
+
+          <div className="mb-6 p-4 bg-amber-50 border border-amber-100 rounded-2xl">
+            <p className="text-xs text-amber-800 leading-relaxed">
+              <i className="fa-solid fa-triangle-exclamation mr-1"></i>
+              <strong>Atención:</strong> Para guardar cambios en la base de datos, debes iniciar sesión con tu cuenta de Google autorizada.
+            </p>
+          </div>
+
+          <button 
+            onClick={handleGoogleLogin}
+            className="w-full bg-white border border-slate-200 text-slate-700 py-4 rounded-xl font-bold hover:bg-slate-50 transition-all shadow-sm flex items-center justify-center gap-3 mb-6"
+          >
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-5 h-5" />
+            Acceder con Google
+          </button>
+
+          <div className="relative flex items-center gap-4 mb-6">
+            <div className="flex-grow h-px bg-slate-100"></div>
+            <span className="text-[10px] font-bold text-slate-400 uppercase">o usar contraseña</span>
+            <div className="flex-grow h-px bg-slate-100"></div>
+          </div>
+
           <form onSubmit={handleLogin} className="space-y-4">
             <input 
               type="text" 
@@ -230,12 +290,34 @@ const Admin: React.FC = () => {
       )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-900">Administración Staff</h1>
-            <p className="text-slate-500">Gestiona noticias, servicios y datos de contacto.</p>
+        {!isFirebaseAuthenticated && (
+          <div className="mb-8 p-4 bg-red-50 border border-red-100 rounded-2xl flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center text-red-600">
+                <i className="fa-solid fa-lock"></i>
+              </div>
+              <div>
+                <p className="text-sm font-bold text-red-900">Modo de Solo Lectura</p>
+                <p className="text-xs text-red-700">Has accedido con contraseña, pero necesitas iniciar sesión con Google para guardar cambios.</p>
+              </div>
+            </div>
+            <button onClick={handleGoogleLogin} className="bg-white text-red-600 px-4 py-2 rounded-xl text-xs font-bold border border-red-100 hover:bg-red-100 transition-all">
+              Vincular Google
+            </button>
           </div>
-          <button onClick={() => setIsAuthenticated(false)} className="bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-xl font-bold hover:bg-red-50 hover:text-red-600 transition-all flex items-center gap-2">
+        )}
+
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+          <div className="flex items-center gap-4">
+            {currentUser && (
+              <img src={currentUser.photoURL} alt="Admin" className="w-12 h-12 rounded-full border-2 border-blue-600 p-0.5" />
+            )}
+            <div>
+              <h1 className="text-3xl font-bold text-slate-900">Administración Staff</h1>
+              <p className="text-slate-500">{currentUser ? `Conectado como ${currentUser.displayName}` : 'Gestiona noticias, servicios y datos de contacto.'}</p>
+            </div>
+          </div>
+          <button onClick={handleLogout} className="bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-xl font-bold hover:bg-red-50 hover:text-red-600 transition-all flex items-center gap-2">
             <i className="fa-solid fa-power-off"></i> Salir
           </button>
         </div>
