@@ -31,23 +31,55 @@ const Contact: React.FC = () => {
           throw new Error('La URL del formulario de Google no está configurada.');
         }
 
-        const formUrl = settings.googleFormUrl.trim();
+        // Sanitización ultra-robusta de la URL de Google Forms
+        let formUrl = settings.googleFormUrl.trim();
+        
+        // Limpiamos parámetros query de visualización (ej: ?usp=sf_link o ?usp=pp_url)
+        if (formUrl.includes('?')) {
+          formUrl = formUrl.split('?')[0];
+        }
+
+        // Reemplazar segmentos no deseados al final por /formResponse (viewform, edit, viewanalytics, prefill)
+        formUrl = formUrl.replace(/\/(viewform|edit|viewanalytics|responses|prefill)$/, '/formResponse');
+
+        // Si no termina con /formResponse pero contiene la estructura de Google Forms, la reconstruimos para asegurar el handler de respuesta
+        if (!formUrl.endsWith('/formResponse')) {
+          // Quitamos barra final si existe
+          if (formUrl.endsWith('/')) {
+            formUrl = formUrl.slice(0, -1);
+          }
+          if (formUrl.includes('/forms/d/e/')) {
+            const parts = formUrl.split('/forms/d/e/');
+            const subparts = parts[1].split('/');
+            const formId = subparts[0];
+            formUrl = `https://docs.google.com/forms/d/e/${formId}/formResponse`;
+          } else if (formUrl.includes('/forms/d/')) {
+            const parts = formUrl.split('/forms/d/');
+            const subparts = parts[1].split('/');
+            const formId = subparts[0];
+            formUrl = `https://docs.google.com/forms/d/${formId}/formResponse`;
+          } else {
+            // Último recurso seguro
+            formUrl = formUrl + '/formResponse';
+          }
+        }
+
         const formBody = new URLSearchParams();
         
-        // Agregar las entradas correspondientes o usar los defaults genéricos
+        // Agregar las entradas de los campos con sus IDs correspondientes
         formBody.append(settings.googleEntryName || 'entry.1', formData.name);
         formBody.append(settings.googleEntryEmail || 'entry.2', formData.email);
         formBody.append(settings.googleEntrySubject || 'entry.3', formData.subject);
         formBody.append(settings.googleEntryMessage || 'entry.4', formData.message);
 
         // Envío directo a Google Forms usando modo "no-cors"
+        // PASAMOS "formBody" (URLSearchParams) DIRECTAMENTE sin headers pesados.
+        // Esto le indica al navegador que configure nativamente 'application/x-www-form-urlencoded;charset=UTF-8',
+        // evitando que políticas estrictas (como Brave o Safari) descarten el header por seguridad CORS.
         await fetch(formUrl, {
           method: 'POST',
           mode: 'no-cors',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          },
-          body: formBody.toString()
+          body: formBody
         });
         
       } else {
