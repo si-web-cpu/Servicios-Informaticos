@@ -562,16 +562,101 @@ const Admin: React.FC = () => {
             <h2 className="text-2xl font-bold mb-2 text-slate-800">Infraestructura del Sistema</h2>
             <p className="text-sm text-slate-500 mb-8">Ajustes técnicos avanzados para el funcionamiento del sitio.</p>
             <form onSubmit={handleSaveSettings} className="space-y-6">
+              
               <div className="space-y-2">
-                <label className="block text-xs font-bold text-slate-400 uppercase ml-1 tracking-widest">URL de Endpoint (Formspree)</label>
-                <input 
-                  type="text" 
-                  className="w-full border p-4 rounded-xl font-mono text-xs bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-slate-900 transition-all" 
-                  value={settings.formEndpoint} 
-                  onChange={e => setSettings({...settings, formEndpoint: e.target.value})} 
-                  placeholder="https://formspree.io/f/tu-id-aqui"
-                />
+                <label className="block text-xs font-bold text-slate-400 uppercase ml-1 tracking-widest">Método de Contacto</label>
+                <select 
+                  className="w-full border p-4 rounded-xl bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-slate-900 transition-all font-semibold text-slate-700"
+                  value={settings.formType || 'standard'}
+                  onChange={e => setSettings({...settings, formType: e.target.value})}
+                >
+                  <option value="standard">Estándar JSON (Formspree / Webhook / n8n / Local)</option>
+                  <option value="google_forms">Google Forms (Directo a Google Sheets)</option>
+                </select>
               </div>
+
+              {(settings.formType === 'standard' || !settings.formType) && (
+                <div className="space-y-2 animate-in fade-in duration-300">
+                  <label className="block text-xs font-bold text-slate-400 uppercase ml-1 tracking-widest">URL de Endpoint (Formspree / n8n / Webhook)</label>
+                  <input 
+                    type="text" 
+                    className="w-full border p-4 rounded-xl font-mono text-xs bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-slate-900 transition-all" 
+                    value={settings.formEndpoint || ''} 
+                    onChange={e => setSettings({...settings, formEndpoint: e.target.value})} 
+                    placeholder="https://formspree.io/f/tu-id-aqui o http://tu-servidor:5678/webhook/..."
+                  />
+                  <p className="text-[11px] text-slate-400 ml-1">Envía los datos del formulario como un objeto JSON.</p>
+                </div>
+              )}
+
+              {settings.formType === 'google_forms' && (
+                <div className="space-y-6 border-l-2 border-blue-500 pl-4 animate-in fade-in duration-300">
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-800 mb-1">Configuración de Google Forms</h3>
+                    <p className="text-xs text-slate-500">Completa con los datos obtenidos del enlace prellenado (Prefilled Link).</p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest">URL de Recolección (formResponse)</label>
+                    <input 
+                      type="text" 
+                      className="w-full border p-4 rounded-xl font-mono text-xs bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500 transition-all" 
+                      value={settings.googleFormUrl || ''} 
+                      onChange={e => setSettings({...settings, googleFormUrl: e.target.value})} 
+                      placeholder="https://docs.google.com/forms/u/0/d/e/1FAIpQLSf.../formResponse"
+                    />
+                    <p className="text-[10px] text-slate-400">Debe terminar con <code className="font-mono bg-slate-100 px-1 py-0.5 rounded">/formResponse</code> en lugar de <code className="font-mono bg-slate-100 px-1 py-0.5 rounded">/viewform</code>.</p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">ID Campo "Nombre" (entry.X)</label>
+                      <input 
+                        type="text" 
+                        required
+                        className="w-full border p-3 rounded-xl font-mono text-xs bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500 transition-all" 
+                        value={settings.googleEntryName || ''} 
+                        onChange={e => setSettings({...settings, googleEntryName: e.target.value})} 
+                        placeholder="entry.123456789"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">ID Campo "Email" (entry.X)</label>
+                      <input 
+                        type="text" 
+                        required
+                        className="w-full border p-3 rounded-xl font-mono text-xs bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500 transition-all" 
+                        value={settings.googleEntryEmail || ''} 
+                        onChange={e => setSettings({...settings, googleEntryEmail: e.target.value})} 
+                        placeholder="entry.987654321"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">ID Campo "Asunto" (entry.X)</label>
+                      <input 
+                        type="text" 
+                        required
+                        className="w-full border p-3 rounded-xl font-mono text-xs bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500 transition-all" 
+                        value={settings.googleEntrySubject || ''} 
+                        onChange={e => setSettings({...settings, googleEntrySubject: e.target.value})} 
+                        placeholder="entry.555555555"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">ID Campo "Mensaje" (entry.X)</label>
+                      <input 
+                        type="text" 
+                        required
+                        className="w-full border p-3 rounded-xl font-mono text-xs bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500 transition-all" 
+                        value={settings.googleEntryMessage || ''} 
+                        onChange={e => setSettings({...settings, googleEntryMessage: e.target.value})} 
+                        placeholder="entry.999999999"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <button type="submit" className="w-full py-4 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-colors">
                 Actualizar Configuración Técnica
               </button>

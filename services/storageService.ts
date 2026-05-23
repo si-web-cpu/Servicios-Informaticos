@@ -317,7 +317,13 @@ const defaultPortfolio: any[] = [
 
 const defaultSettings = {
   formEndpoint: '', // URL de Formspree o similar
-  isMaintenanceMode: false
+  isMaintenanceMode: false,
+  formType: 'standard', // 'standard' o 'google_forms'
+  googleFormUrl: '', // URL del formResponse de Google Forms
+  googleEntryName: '', // ID de campo de Google Form para "Nombre"
+  googleEntryEmail: '', // ID de campo de Google Form para "Email"
+  googleEntrySubject: '', // ID de campo de Google Form para "Asunto"
+  googleEntryMessage: '' // ID de campo de Google Form para "Mensaje"
 };
 
 const defaultApps: any[] = [

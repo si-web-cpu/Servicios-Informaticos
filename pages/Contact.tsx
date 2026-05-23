@@ -26,19 +26,45 @@ const Contact: React.FC = () => {
     setError(null);
 
     try {
-      if (settings.formEndpoint && settings.formEndpoint.trim() !== '') {
-        // ENVÍO REAL si el endpoint está configurado en el Admin
-        const response = await fetch(settings.formEndpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData)
-        });
+      if (settings.formType === 'google_forms') {
+        if (!settings.googleFormUrl || settings.googleFormUrl.trim() === '') {
+          throw new Error('La URL del formulario de Google no está configurada.');
+        }
 
-        if (!response.ok) throw new Error('Error al enviar. Verifica tu configuración.');
+        const formUrl = settings.googleFormUrl.trim();
+        const formBody = new URLSearchParams();
+        
+        // Agregar las entradas correspondientes o usar los defaults genéricos
+        formBody.append(settings.googleEntryName || 'entry.1', formData.name);
+        formBody.append(settings.googleEntryEmail || 'entry.2', formData.email);
+        formBody.append(settings.googleEntrySubject || 'entry.3', formData.subject);
+        formBody.append(settings.googleEntryMessage || 'entry.4', formData.message);
+
+        // Envío directo a Google Forms usando modo "no-cors"
+        await fetch(formUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: formBody.toString()
+        });
+        
       } else {
-        // MODO SIMULACIÓN si no hay endpoint (útil para testing)
-        console.warn("Servicios Informáticos: Formulario operando en modo simulación (sin endpoint configurado)");
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        // COMPORTAMIENTO ESTÁNDAR (JSON / webhook)
+        if (settings.formEndpoint && settings.formEndpoint.trim() !== '') {
+          const response = await fetch(settings.formEndpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+          });
+
+          if (!response.ok) throw new Error('Error al enviar. Verifica tu configuración.');
+        } else {
+          // MODO SIMULACIÓN si no hay endpoint (útil para testing)
+          console.warn("Servicios Informáticos: Formulario operando en modo simulación (sin endpoint configurado)");
+          await new Promise(resolve => setTimeout(resolve, 1500));
+        }
       }
 
       setIsSubmitted(true);
@@ -55,6 +81,11 @@ const Contact: React.FC = () => {
     setIsSubmitted(false);
     setError(null);
   };
+
+  // Determinar si está en modo simulación
+  const isSimulationActive = settings.formType === 'google_forms' 
+    ? (!settings.googleFormUrl || settings.googleFormUrl.trim() === '')
+    : (!settings.formEndpoint || settings.formEndpoint.trim() === '');
 
   return (
     <div className="pt-16 pb-20">
@@ -101,10 +132,10 @@ const Contact: React.FC = () => {
             {!isSubmitted ? (
               <ScrollReveal variant="right" delay={300}>
                 <div className="bg-white p-10 rounded-3xl shadow-xl border relative">
-                  {!settings.formEndpoint && (
+                  {isSimulationActive && (
                     <div className="mb-6 p-3 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-xl text-[10px] font-bold uppercase tracking-widest flex items-center gap-2">
                       <i className="fa-solid fa-triangle-exclamation"></i>
-                      Modo Simulación Activo (Configura el endpoint en el Admin para recibir correos)
+                      Modo Simulación Activo (Configura el método de contacto en el Admin para recibir mensajes)
                     </div>
                   )}
 
