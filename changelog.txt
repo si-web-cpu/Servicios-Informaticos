@@ -1,0 +1,62 @@
+REGISTRO DE MODIFICACIONES Y VERSIONES - SERVICIOS INFORMÁTICOS NEXUS
+======================================================================
+
+Este archivo registra de forma interna el historial de cambios, mejoras, correcciones
+y nuevas funcionalidades que se han implementado en la plataforma web.
+
+----------------------------------------------------------------------
+VERSIÓN 1.6.0 - 2026-05-27 [ACTUAL]
+----------------------------------------------------------------------
+* NUEVA SECCIÓN: "Automatizaciones (n8n)"
+  - Integración en la Barra de Navegación y el Footer.
+  - Landing page dedicada a la automatización de procesos mediante n8n.
+  - Calculadora interactiva de Retorno de Inversión (ROI) que estima horas
+    ahorradas, dinero anual recuperado y porcentaje de optimización.
+  - Solución al error de navegación en anchor links reemplazando el enlace de la calculadora por un disparador onClick con desplazamiento suave (smooth scroll).
+  - Cuadro comparativo en profundidad con Ventajas y Desafíos del no-code / low-code.
+  - Guía explicativa interactiva sobre cómo funciona n8n local con Webhooks, 
+    detallando alternativas profesionales de túneles seguros (Ngrok, Cloudflare Tunnels) 
+    y conexiones en la Nube.
+  - Sección de Preguntas Frecuentes (FAQ) optimizada para clientes.
+* MEJORAS SEO Y INDEXACIÓN:
+  - Adición de metatags avanzadas de descripción, autor y palabras clave optimizadas
+    en index.html (especialización en automatización de n8n, soporte informático,
+    soporte a hogar y comercio).
+  - OpenGraph tags optimizadas para mejor posicionamiento orgánico en motores de búsqueda.
+* CREACIÓN DEL LOG DE CONTROL:
+  - Creación del presente archivo 'changelog.txt' para facilitar la auditoría y
+    evolución controlada del código de la aplicación.
+
+----------------------------------------------------------------------
+VERSIÓN 1.5.0 - 2026-05-23
+----------------------------------------------------------------------
+* INTEGRACIÓN CON GOOGLE FORMS & GOOGLE SHEETS:
+  - Implementación de un flujo alternativo ultra-silencioso de recolección de datos.
+  - Soporte para envío directo en segundo plano usando 'no-cors' y URLSearchParams
+    (evita bloqueos de políticas de origen por CORS en navegadores iOS/Brave).
+  - Sanitizador de URL automático en el Admin: Ajusta links prellenados y enlaces
+    de visualización finales (sustituye /viewform por /formResponse y remueve parámetros query).
+  - Panel para mapear los IDs 'entry.XXXXX' en la configuración técnica de Admin.
+* MEJORAS EN FOOTER:
+  - Salto de Versión en el pie de página a 1.5.0.
+
+----------------------------------------------------------------------
+VERSIÓN 1.4.3 - 2026-04-16
+----------------------------------------------------------------------
+* SEGURIDAD Y RESILIENCIA:
+  - Modificación de la pantalla de Login (Admin) para incluir un banner de advertencia crítico
+    en color rojo suave / rojo brillante destacado, asegurando visibilidad inmediata de seguridad.
+  - Optimización robusta en la obtención de datos de visitas: Manejo de errores asíncronos en
+    el fetch del endpoint CounterAPI. Ahora devuelve 0 en lugar de guiones nulos si falla la red.
+* ACTUALIZACIÓN DEL FOOTER:
+  - Incremento de versión a v1.4.3 en Footer.tsx.
+
+----------------------------------------------------------------------
+HISTORIAL PREVIO (v1.0.0 - v1.4.2)
+----------------------------------------------------------------------
+* Lanzamiento inicial de Servicios Informáticos Nexus.
+* Sección 'Aplicaciones Útiles' para descarga de utilidades habituales.
+* Sección 'Noticias e Informática' con blog dinámico sobre tecnología y ciberseguridad.
+* Sección 'Contacto' vinculada inicialmente con endpoints estándares (Formspree).
+* Sistema de Admin básico con autenticación mediante variables de entorno locales.
+* Persistencia y base de datos con sincronización offline-first mediante servicios de almacenamiento.
