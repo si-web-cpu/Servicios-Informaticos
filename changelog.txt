@@ -5,7 +5,22 @@ Este archivo registra de forma interna el historial de cambios, mejoras, correcc
 y nuevas funcionalidades que se han implementado en la plataforma web.
 
 ----------------------------------------------------------------------
-VERSIÓN 1.6.0 - 2026-05-27 [ACTUAL]
+VERSIÓN 1.7.0 - 2026-05-30 [ACTUAL]
+----------------------------------------------------------------------
+* MEJORA DEL FORMULARIO DE CONTACTO:
+  - Adición del campo "Teléfono de Contacto" obligatorio en el formulario.
+  - Adición de un indicador explícito amarillo ("SIN el signo +") y cambio del marcador de posición para evitar que el usuario ingrese el signo más.
+  - Implementación de sanitización reactiva por código que remueve el caracter "+" al instante si se escribe o pega en el campo de teléfono para garantizar compatibilidad con Evolution API.
+  - Adición del selector de consentimiento personalizado de WhatsApp ("Deseo ser contactado por WhatsApp") con un ícono interactivo.
+  - Actualización del mapeo de datos para el envío de formularios a Google Forms (ahora se permite mapear de manera independiente los atributos del ID del campo Teléfono y WhatsApp a través del panel de administración).
+  - Admisión completa del reenvío de estos dos nuevos atributos también mediante la API estándar JSON/Webhook.
+  - Incremento de la versión pública en el footer a la versión 1.7.0.
+* RESILIENCIA DE FIREBASE AUTH:
+  - Implementación de un validador preventivo de API Key de Firebase (`isFirebaseConfigured`) para evitar errores fatales en el cliente cuando la API Key no está definida o es un marcador de posición.
+  - Rediseño de la UI del Admin para mostrar ayudas interactivas explicando cómo configurar las variables en lugar de mostrar errores crípticos del SDK.
+
+----------------------------------------------------------------------
+VERSIÓN 1.6.0 - 2026-05-27
 ----------------------------------------------------------------------
 * NUEVA SECCIÓN: "Automatizaciones (n8n)"
   - Integración en la Barra de Navegación y el Footer.

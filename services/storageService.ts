@@ -322,6 +322,8 @@ const defaultSettings = {
   googleFormUrl: '', // URL del formResponse de Google Forms
   googleEntryName: '', // ID de campo de Google Form para "Nombre"
   googleEntryEmail: '', // ID de campo de Google Form para "Email"
+  googleEntryPhone: '', // ID de campo de Google Form para "Teléfono"
+  googleEntryWhatsapp: '', // ID de campo de Google Form para "Asunto de WhatsApp"
   googleEntrySubject: '', // ID de campo de Google Form para "Asunto"
   googleEntryMessage: '' // ID de campo de Google Form para "Mensaje"
 };

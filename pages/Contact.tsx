@@ -6,7 +6,7 @@ import { storageService } from '../services/storageService';
 const Contact: React.FC = () => {
   const [contactInfo, setContactInfo] = useState(storageService.getContact());
   const [settings, setSettings] = useState(storageService.getSettings());
-  const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '', whatsapp: false, subject: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -69,6 +69,12 @@ const Contact: React.FC = () => {
         // Agregar las entradas de los campos con sus IDs correspondientes
         formBody.append(settings.googleEntryName || 'entry.1', formData.name);
         formBody.append(settings.googleEntryEmail || 'entry.2', formData.email);
+        if (settings.googleEntryPhone) {
+          formBody.append(settings.googleEntryPhone, formData.phone);
+        }
+        if (settings.googleEntryWhatsapp) {
+          formBody.append(settings.googleEntryWhatsapp, formData.whatsapp ? 'Sí' : 'No');
+        }
         formBody.append(settings.googleEntrySubject || 'entry.3', formData.subject);
         formBody.append(settings.googleEntryMessage || 'entry.4', formData.message);
 
@@ -109,7 +115,7 @@ const Contact: React.FC = () => {
   };
 
   const resetForm = () => {
-    setFormData({ name: '', email: '', subject: '', message: '' });
+    setFormData({ name: '', email: '', phone: '', whatsapp: false, subject: '', message: '' });
     setIsSubmitted(false);
     setError(null);
   };
@@ -201,6 +207,41 @@ const Contact: React.FC = () => {
                           value={formData.email} 
                           onChange={e => setFormData({...formData, email: e.target.value})} 
                         />
+                      </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-between">
+                          <label className="text-xs font-bold text-slate-400 uppercase ml-1">Teléfono de Contacto</label>
+                          <span className="text-[10px] text-amber-600 font-bold bg-amber-50 px-2 py-0.5 rounded border border-amber-200">SIN el signo "+"</span>
+                        </div>
+                        <input 
+                          type="tel" 
+                          placeholder="Ej: 5493511234567 (Código país + Código área + Número)" 
+                          required 
+                          className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 transition-all" 
+                          value={formData.phone} 
+                          onChange={e => {
+                            // Eliminamos automáticamente cualquier signo "+" si el usuario lo ingresa por error
+                            const cleaned = e.target.value.replace(/\+/g, '');
+                            setFormData({...formData, phone: cleaned});
+                          }} 
+                        />
+                      </div>
+                      <div className="flex items-center space-x-3 h-full pt-4 md:pt-5 pl-1">
+                        <label className="relative flex items-center gap-3 cursor-pointer select-none">
+                          <input 
+                            type="checkbox" 
+                            className="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer" 
+                            checked={formData.whatsapp}
+                            onChange={e => setFormData({...formData, whatsapp: e.target.checked})}
+                          />
+                          <span className="text-sm font-bold text-slate-600 flex items-center gap-2">
+                            <i className="fa-brands fa-whatsapp text-green-500 text-lg"></i>
+                            Deseo ser contactado por WhatsApp
+                          </span>
+                        </label>
                       </div>
                     </div>
                     <div className="space-y-1">

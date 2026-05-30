@@ -4,7 +4,7 @@ import { storageService } from '../services/storageService';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
-import { auth, googleProvider } from '../services/firebase';
+import { auth, googleProvider, isFirebaseConfigured } from '../services/firebase';
 import { signInWithPopup, onAuthStateChanged, signOut } from 'firebase/auth';
 
 const Admin: React.FC = () => {
@@ -37,6 +37,10 @@ const Admin: React.FC = () => {
   const BASE_VISITS = 1248;
 
   useEffect(() => {
+    if (!isFirebaseConfigured) {
+      console.warn("Firebase no está configurado (VITE_FIREBASE_API_KEY no es válida). El inicio de sesión con Google estará desactivado.");
+      return;
+    }
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user && user.email === 'kakarotto.jj@gmail.com') {
         setIsFirebaseAuthenticated(true);
@@ -87,6 +91,14 @@ const Admin: React.FC = () => {
   };
 
   const handleGoogleLogin = async () => {
+    if (!isFirebaseConfigured) {
+      alert(
+        '⚠️ Configuración de Firebase requerida\n\n' +
+        'El inicio de sesión de Google requiere que configures tus credenciales de Firebase válidas.\n\n' +
+        'Por favor, asegúrate de haber cargado VITE_FIREBASE_API_KEY, VITE_FIREBASE_AUTH_DOMAIN y demás variables en la configuración del servidor, o haber hecho la provisión correcta. Mientras tanto, puedes acceder con la contraseña de Administración local para probar las herramientas.'
+      );
+      return;
+    }
     try {
       const result = await signInWithPopup(auth, googleProvider);
       if (result.user.email !== 'kakarotto.jj@gmail.com') {
@@ -253,19 +265,32 @@ const Admin: React.FC = () => {
             <p className="text-slate-500 text-sm mt-1">Identifícate para gestionar el sitio</p>
           </div>
 
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl">
-            <p className="text-xs text-red-800 leading-relaxed">
-              <i className="fa-solid fa-triangle-exclamation mr-1 text-red-600"></i>
-              <strong className="text-red-700">Atención Crítica:</strong> Para guardar cambios en la base de datos, <strong>DEBES</strong> iniciar sesión con tu cuenta de Google autorizada. El acceso por contraseña es solo de lectura.
-            </p>
-          </div>
+          {isFirebaseConfigured ? (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl">
+              <p className="text-xs text-red-800 leading-relaxed">
+                <i className="fa-solid fa-triangle-exclamation mr-1 text-red-600"></i>
+                <strong className="text-red-700">Atención Crítica:</strong> Para guardar cambios en la base de datos, <strong>DEBES</strong> iniciar sesión con tu cuenta de Google autorizada. El acceso por contraseña es solo de lectura.
+              </p>
+            </div>
+          ) : (
+            <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+              <p className="text-xs text-amber-800 leading-relaxed">
+                <i className="fa-solid fa-circle-info mr-1 text-amber-600"></i>
+                <strong>Google Auth no configurado:</strong> El proyecto no tiene credenciales de Firebase configuradas aún (VITE_FIREBASE_API_KEY no detectado). Puedes acceder en modo administrador local con contraseña para probar.
+              </p>
+            </div>
+          )}
 
           <button 
             onClick={handleGoogleLogin}
-            className="w-full bg-white border border-slate-200 text-slate-700 py-4 rounded-xl font-bold hover:bg-slate-50 transition-all shadow-sm flex items-center justify-center gap-3 mb-6"
+            className={`w-full py-4 rounded-xl font-bold transition-all shadow-sm flex items-center justify-center gap-3 mb-6 ${
+              isFirebaseConfigured 
+                ? 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50' 
+                : 'bg-slate-100 border border-slate-200 text-slate-400 cursor-not-allowed'
+            }`}
           >
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-5 h-5" />
-            Acceder con Google
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className={`w-5 h-5 ${!isFirebaseConfigured ? 'grayscale opacity-50' : ''}`} />
+            {isFirebaseConfigured ? 'Acceder con Google' : 'Google Auth inactivo'}
           </button>
 
           <div className="relative flex items-center gap-4 mb-6">
@@ -316,18 +341,29 @@ const Admin: React.FC = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {!isFirebaseAuthenticated && (
-          <div className="mb-8 p-4 bg-red-50 border border-red-100 rounded-2xl flex items-center justify-between gap-4">
+          <div className="mb-8 p-4 bg-red-50 border border-red-100 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center text-red-600">
+              <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center text-red-600 shrink-0">
                 <i className="fa-solid fa-lock"></i>
               </div>
               <div>
                 <p className="text-sm font-bold text-red-900">Modo de Solo Lectura</p>
-                <p className="text-xs text-red-700">Has accedido con contraseña, pero necesitas iniciar sesión con Google para guardar cambios.</p>
+                <p className="text-xs text-red-700">
+                  {isFirebaseConfigured 
+                    ? "Has accedido con contraseña, pero necesitas iniciar sesión con Google para guardar cambios."
+                    : "Para guardar cambios reales en bases de datos requerirás configurar Google Auth / Firebase en tu proyecto."}
+                </p>
               </div>
             </div>
-            <button onClick={handleGoogleLogin} className="bg-white text-red-600 px-4 py-2 rounded-xl text-xs font-bold border border-red-100 hover:bg-red-100 transition-all">
-              Vincular Google
+            <button 
+              onClick={handleGoogleLogin} 
+              className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all ${
+                isFirebaseConfigured
+                  ? 'bg-white text-red-600 border-red-100 hover:bg-red-100'
+                  : 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
+              }`}
+            >
+              {isFirebaseConfigured ? 'Vincular Google' : 'Google Auth pendiente'}
             </button>
           </div>
         )}
@@ -629,6 +665,28 @@ const Admin: React.FC = () => {
                         value={settings.googleEntryEmail || ''} 
                         onChange={e => setSettings({...settings, googleEntryEmail: e.target.value})} 
                         placeholder="entry.987654321"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">ID Campo "Teléfono" (entry.X)</label>
+                      <input 
+                        type="text" 
+                        required
+                        className="w-full border p-3 rounded-xl font-mono text-xs bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500 transition-all" 
+                        value={settings.googleEntryPhone || ''} 
+                        onChange={e => setSettings({...settings, googleEntryPhone: e.target.value})} 
+                        placeholder="entry.111222333"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider">ID Campo "Prefiere WhatsApp" (entry.X)</label>
+                      <input 
+                        type="text" 
+                        required
+                        className="w-full border p-3 rounded-xl font-mono text-xs bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500 transition-all" 
+                        value={settings.googleEntryWhatsapp || ''} 
+                        onChange={e => setSettings({...settings, googleEntryWhatsapp: e.target.value})} 
+                        placeholder="entry.444555666"
                       />
                     </div>
                     <div className="space-y-1">
