@@ -5,7 +5,21 @@ Este archivo registra de forma interna el historial de cambios, mejoras, correcc
 y nuevas funcionalidades que se han implementado en la plataforma web.
 
 ----------------------------------------------------------------------
-VERSIÓN 1.7.0 - 2026-05-30 [ACTUAL]
+VERSIÓN 1.8.0 - 2026-06-17 [ACTUAL]
+----------------------------------------------------------------------
+* REPOSICIONAMIENTO Y REDISEÑO ESTRATÉGICO PREMIUM:
+  - Reposicionamiento de marca: Se cambió de "Técnico reparador de computadoras" a un perfil de "Consultor y Solucionador de Problemas Tecnológicos" de alta fiabilidad.
+  - Rediseño de la Página de Inicio (Home):
+    - Nueva propuesta de valor de nivel corporativo orientada a soporte remoto, automatización de procesos (n8n/Make) y abonos mensuales.
+    - Sección detallada de "Filtro de Calidad" que establece reglas de trabajo limpias: Soporte bajo abonos prioritarios, atención remota por defecto para agilizar tiempos y limitación de urgencias fuera de agenda.
+    - Secciones visuales optimizadas con una paleta elegante, de alto contraste que transmite seriedad y profesionalismo impecable.
+  - Rediseño de la Sección de Servicios (Services):
+    - Se dividió el catálogo en especialidades específicas de soporte remoto avanzado (Windows, Microsoft 365, Outlook corporativo, sistemas contables y copias de seguridad continuas).
+    - Creación del nuevo comparador de "Abónos de Soporte Mensual" con tres segmentos específicos: Plan Profesional (para teletrabajo/autónomos), Plan Comercios (hasta 5 computadoras + backups diarios) y Plan Corporativo / Estudio Contable (soporte avanzado Tango/SIAP/AFIP, hasta 15 computadoras, SLA crítico de menos de 2 horas y planes redundantes).
+    - Se incluyeron límites sugeridos claros, ventajas competitivas muy persuasivas y llamadas a la acción que conectan directo con leads calificados hacia el canal verificado de WhatsApp.
+
+----------------------------------------------------------------------
+VERSIÓN 1.7.0 - 2026-05-30
 ----------------------------------------------------------------------
 * MEJORA DEL FORMULARIO DE CONTACTO:
   - Adición del campo "Teléfono de Contacto" obligatorio en el formulario.

@@ -13,7 +13,7 @@ const Admin: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [user, setUser] = useState('');
   const [pass, setPass] = useState('');
-  const [activeTab, setActiveTab] = useState<'news' | 'services' | 'contact' | 'settings' | 'stats' | 'apps' | 'portfolio' | 'icons'>('news');
+  const [activeTab, setActiveTab] = useState<'news' | 'services' | 'planes' | 'contact' | 'settings' | 'stats' | 'apps' | 'portfolio' | 'icons'>('news');
   
   // Feedback State
   const [feedback, setFeedback] = useState<{msg: string, type: 'success' | 'error'} | null>(null);
@@ -22,6 +22,7 @@ const Admin: React.FC = () => {
   // Data States
   const [news, setNews] = useState(storageService.getNews());
   const [services, setServices] = useState(storageService.getServices());
+  const [planes, setPlanes] = useState(() => storageService.getPlanes());
   const [contact, setContact] = useState(storageService.getContact());
   const [settings, setSettings] = useState(storageService.getSettings());
   const [apps, setApps] = useState(storageService.getApps());
@@ -31,6 +32,7 @@ const Admin: React.FC = () => {
   // Form States
   const [editItem, setEditItem] = useState<any>(null);
   const [editService, setEditService] = useState<any>(null);
+  const [editPlan, setEditPlan] = useState<any>(null);
   const [editApp, setEditApp] = useState<any>(null);
   const [editPortfolio, setEditPortfolio] = useState<any>(null);
 
@@ -241,6 +243,49 @@ const Admin: React.FC = () => {
     }, 'Caso de éxito eliminado');
   };
 
+  const handleSavePlan = (e: React.FormEvent) => {
+    e.preventDefault();
+    simulateSave(async () => {
+      let updated;
+      const benefits = editPlan.benefitsString
+        ? editPlan.benefitsString.split('\n').map((b: string) => b.trim()).filter((b: string) => b !== '')
+        : [];
+      
+      const preparedPlan = {
+        name: editPlan.name,
+        slug: editPlan.slug || editPlan.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "-"),
+        tagline: editPlan.tagline,
+        price: editPlan.price,
+        currency: editPlan.currency || 'USD',
+        frequency: editPlan.frequency || 'mes',
+        benefits: benefits,
+        limits: editPlan.limits,
+        sla: editPlan.sla,
+        badge: editPlan.badge || 'Básico',
+        isPopular: editPlan.isPopular === true || editPlan.isPopular === 'true'
+      };
+
+      if (planes.some((p: any) => p.slug === preparedPlan.slug)) {
+        updated = planes.map((p: any) => p.slug === preparedPlan.slug ? preparedPlan : p);
+      } else {
+        updated = [...planes, preparedPlan];
+      }
+      
+      setPlanes(updated);
+      await storageService.savePlanes(updated);
+      setEditPlan(null);
+    }, 'Abono mensual guardado exitosamente');
+  };
+
+  const handleDeletePlan = (slug: string) => {
+    if (!window.confirm('¿Seguro que deseas eliminar este abono mensual?')) return;
+    simulateSave(async () => {
+      const updated = planes.filter((p: any) => p.slug !== slug);
+      setPlanes(updated);
+      await storageService.savePlanes(updated);
+    }, 'Abono mensual eliminado');
+  };
+
   const handleSaveContact = (e: React.FormEvent) => {
     e.preventDefault();
     simulateSave(async () => {
@@ -384,13 +429,13 @@ const Admin: React.FC = () => {
         </div>
 
         <div className="flex gap-4 mb-8 border-b border-slate-200 overflow-x-auto pb-1">
-          {['news', 'services', 'apps', 'portfolio', 'contact', 'settings', 'stats', 'icons'].map(tab => (
+          {['news', 'services', 'planes', 'apps', 'portfolio', 'contact', 'settings', 'stats', 'icons'].map(tab => (
             <button 
               key={tab} 
               onClick={() => setActiveTab(tab as any)}
               className={`pb-4 px-6 font-bold whitespace-nowrap transition-all relative ${activeTab === tab ? 'text-blue-600' : 'text-slate-400 hover:text-slate-600'}`}
             >
-              {tab === 'news' ? 'Noticias' : tab === 'services' ? 'Servicios' : tab === 'apps' ? 'Apps' : tab === 'portfolio' ? 'Casos Éxito' : tab === 'contact' ? 'Contacto' : tab === 'settings' ? 'Ajustes' : tab === 'stats' ? 'Estadísticas' : 'Iconos'}
+              {tab === 'news' ? 'Noticias' : tab === 'services' ? 'Servicios' : tab === 'planes' ? 'Abonos Mensuales' : tab === 'apps' ? 'Apps' : tab === 'portfolio' ? 'Casos Éxito' : tab === 'contact' ? 'Contacto' : tab === 'settings' ? 'Ajustes' : tab === 'stats' ? 'Estadísticas' : 'Iconos'}
               {activeTab === tab && <div className="absolute bottom-0 left-0 right-0 h-1 bg-blue-600 rounded-t-full"></div>}
             </button>
           ))}
@@ -451,6 +496,67 @@ const Admin: React.FC = () => {
                       <td className="px-6 py-4 text-right space-x-3">
                         <button onClick={() => setEditService(s)} className="text-blue-600 font-bold hover:underline">Editar</button>
                         <button onClick={() => handleDeleteService(s.id)} className="text-red-600 font-bold hover:underline">Borrar</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'planes' && (
+          <div className="space-y-6">
+            <button 
+              onClick={() => setEditPlan({ name: '', slug: '', tagline: '', price: '', currency: 'USD', frequency: 'mes', benefitsString: '', limits: '', sla: '', badge: '', isPopular: false })} 
+              className="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-100 flex items-center gap-2"
+            >
+              <i className="fa-solid fa-plus"></i> Añadir Abono Mensual
+            </button>
+            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-slate-50 border-b border-slate-200">
+                  <tr>
+                    <th className="px-6 py-4 font-bold text-slate-700">Abono/Plan</th>
+                    <th className="px-6 py-4 font-bold text-slate-700">Etiqueta/Badge</th>
+                    <th className="px-6 py-4 font-bold text-slate-700">Precio (USD)</th>
+                    <th className="px-6 py-4 font-bold text-slate-700">Popular</th>
+                    <th className="px-6 py-4 text-right font-bold text-slate-700">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {planes.map((p: any) => (
+                    <tr key={p.slug} className="hover:bg-slate-50/50 transition-colors">
+                      <td className="px-6 py-4 font-medium text-slate-800">
+                        <div className="font-bold">{p.name}</div>
+                        <div className="text-xs text-slate-400 mt-0.5">{p.slug}</div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="px-2.5 py-1 text-[10px] bg-blue-50 text-blue-600 border border-blue-100 rounded font-bold uppercase">{p.badge || 'Básico'}</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-mono font-bold font-sm text-slate-800">${p.price} {p.currency}/{p.frequency}</span>
+                      </td>
+                      <td className="px-6 py-4 uppercase">
+                        {p.isPopular ? (
+                          <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-full font-bold text-[9px]">Popular *</span>
+                        ) : (
+                          <span className="text-slate-450 text-xs">-</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 text-right space-x-3 text-xs sm:text-sm">
+                        <button 
+                          onClick={() => setEditPlan({ ...p, benefitsString: p.benefits ? p.benefits.join('\n') : '' })} 
+                          className="text-blue-600 font-bold hover:underline"
+                        >
+                          Editar
+                        </button>
+                        <button 
+                          onClick={() => handleDeletePlan(p.slug)} 
+                          className="text-red-600 font-bold hover:underline"
+                        >
+                          Borrar
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -1063,6 +1169,89 @@ const Admin: React.FC = () => {
                 <div className="flex gap-4 pt-6">
                   <button type="submit" className="flex-1 bg-blue-600 text-white py-4 rounded-xl font-bold shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all">Sincronizar</button>
                   <button type="button" onClick={() => setEditService(null)} className="flex-1 bg-slate-100 text-slate-600 py-4 rounded-xl font-bold hover:bg-slate-200 transition-all">Descartar</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* MODAL PLANES / ABONOS MENSUALES */}
+        {editPlan && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 overflow-y-auto">
+            <div className="bg-white p-8 sm:p-10 rounded-3xl w-full max-w-2xl shadow-2xl my-8 animate-in zoom-in duration-200">
+              <h2 className="text-2xl font-bold mb-6 text-slate-900 flex items-center gap-3">
+                <i className="fa-solid fa-file-invoice-dollar text-blue-600"></i> Configurar Plan Mensual
+              </h2>
+              <form onSubmit={handleSavePlan} className="space-y-4 max-h-[75vh] overflow-y-auto pr-2">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nombre del Plan</label>
+                    <input type="text" required className="w-full border p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" value={editPlan.name} onChange={e => setEditPlan({...editPlan, name: e.target.value})} placeholder="Ej: Control Total" />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Badge / Etiqueta</label>
+                    <input type="text" className="w-full border p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" value={editPlan.badge} onChange={e => setEditPlan({...editPlan, badge: e.target.value})} placeholder="Ej: Plan Inicial / Recomendado" />
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Eslogan / Copia del Plan</label>
+                  <input type="text" required className="w-full border p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" value={editPlan.tagline} onChange={e => setEditPlan({...editPlan, tagline: e.target.value})} placeholder="Ej: Ideal para asegurar y monitorear hasta 10 terminales" />
+                </div>
+
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Precio</label>
+                    <input type="text" required className="w-full border p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" value={editPlan.price} onChange={e => setEditPlan({...editPlan, price: e.target.value})} placeholder="Ej: 50.000 / Consultar" />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Moneda</label>
+                    <input type="text" required className="w-full border p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" value={editPlan.currency} onChange={e => setEditPlan({...editPlan, currency: e.target.value})} placeholder="Ej: ARS / USD" />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Frecuencia</label>
+                    <input type="text" required className="w-full border p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" value={editPlan.frequency} onChange={e => setEditPlan({...editPlan, frequency: e.target.value})} placeholder="Ej: mes" />
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Límites / Cobertura</label>
+                    <input type="text" className="w-full border p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" value={editPlan.limits} onChange={e => setEditPlan({...editPlan, limits: e.target.value})} placeholder="Ej: Hasta 10 terminales + 1 Servidor" />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">SLA / Compromiso</label>
+                    <input type="text" className="w-full border p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" value={editPlan.sla} onChange={e => setEditPlan({...editPlan, sla: e.target.value})} placeholder="Ej: Soporte prioritario crítico < 2h" />
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 py-2 bg-slate-50 px-4 rounded-xl border">
+                  <input 
+                    type="checkbox" 
+                    id="isPopular" 
+                    className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500" 
+                    checked={editPlan.isPopular} 
+                    onChange={e => setEditPlan({...editPlan, isPopular: e.target.checked})} 
+                  />
+                  <label htmlFor="isPopular" className="text-xs font-bold text-slate-700 select-none cursor-pointer">Destacar como el plan "MÁS POPULAR" (Borde color azul llamativo)</label>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Beneficios / Servicios Incluidos (Uno por párrafo/línea)</label>
+                  <textarea 
+                    required 
+                    className="w-full border p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 resize-y" 
+                    rows={6} 
+                    value={editPlan.benefitsString} 
+                    onChange={e => setEditPlan({...editPlan, benefitsString: e.target.value})} 
+                    placeholder="Monitoreo 24/7 activo&#15;Copias de seguridad automáticas diarias&#15;Soporte remoto para emergencias ilimitado"
+                  />
+                  <p className="text-[10px] text-slate-400 italic">Cada salto de línea representa un casillero verde de beneficio en la tabla comparativa.</p>
+                </div>
+
+                <div className="flex gap-4 pt-6">
+                  <button type="submit" className="flex-grow bg-blue-600 text-white py-4 rounded-xl font-bold shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all">Guardar Plan</button>
+                  <button type="button" onClick={() => setEditPlan(null)} className="flex-1 bg-slate-100 text-slate-600 py-4 rounded-xl font-bold hover:bg-slate-200 transition-all">Cancelar</button>
                 </div>
               </form>
             </div>

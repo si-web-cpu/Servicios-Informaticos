@@ -336,6 +336,69 @@ const defaultApps: any[] = [
   { id: 'a5', name: 'Malwarebytes', description: 'Excelente herramienta para detectar y eliminar malware.', url: 'https://www.malwarebytes.com/mwb-download', icon: 'fa-shield-halved', category: 'seguridad' }
 ];
 
+const defaultPlanes = [
+  {
+    name: 'Plan Profesional',
+    slug: 'profesional',
+    tagline: 'Ideal para autónomos, profesionales independientes y teletrabajo exigente.',
+    price: '15',
+    currency: 'USD',
+    frequency: 'mes',
+    benefits: [
+      'Soporte técnico remoto prioritario (Windows, macOS)',
+      'Resolución de problemas de Outlook, Word, Excel y PDF',
+      'Configuración de cuentas de correo corporativo / IMAP',
+      'Optimización y limpieza lógica de sistema semestral',
+      'Licencia Antivirus gestionada en la nube (1 año)',
+      'Asistencia por AnyDesk / RustDesk segura'
+    ],
+    limits: 'Válido para 1 PC de escritorio + 1 Notebook personal.',
+    sla: 'Respuesta en menos de 12 horas hábiles.',
+    badge: 'Básico',
+    isPopular: false
+  },
+  {
+    name: 'Plan Comercios & Oficinas',
+    slug: 'comercios',
+    tagline: 'Para locales comerciales, oficinas de atención y pymes de servicio.',
+    price: '45',
+    currency: 'USD',
+    frequency: 'mes',
+    benefits: [
+      'Soporte técnico remoto ultrarrápido (Todos los equipos)',
+      'Configuración y solución de impresoras térmicas y de red',
+      'Copia de seguridad (Backup) diario de facturación',
+      'Asistencia en red local Wi-Fi / Conexiones caídas',
+      'Soporte para sistemas de punto de venta (POS)',
+      'Mantenimiento preventivo presencial bimestral coordinado'
+    ],
+    limits: 'Soporte completo para hasta 5 computadoras conectadas.',
+    sla: 'SLA Prioritario: Respuesta en menos de 6 horas hábiles.',
+    badge: 'Recomendado',
+    isPopular: true
+  },
+  {
+    name: 'Corporativo & Estudio Contable',
+    slug: 'contable',
+    tagline: 'Abono de alta intensidad para estudios de contadores, agencias y pymes.',
+    price: '95',
+    currency: 'USD',
+    frequency: 'mes',
+    benefits: [
+      'Soporte crítico ilimitado remoto prioritario #1',
+      'Mantenimiento e instalación de software contable (SIAP, AFIP, Tango...)',
+      'Configuración avanzada de Microsoft Office 350 corporativo / Office 365',
+      'Políticas estrictas de Backup local + Nube (Redundancia)',
+      'Auditoría y parche de seguridad mensual continuo',
+      'Visita presencial coordinada mensual para revisión física'
+    ],
+    limits: 'Soporte especializado para hasta 15 estaciones de trabajo.',
+    sla: 'SLA Crítico: Respuesta urgente en menos de 2 horas.',
+    badge: 'Premium',
+    isPopular: false
+  }
+];
+
 const notifyChange = (key: string) => {
   window.dispatchEvent(new CustomEvent('nexus_storage_update', { detail: { key } }));
 };
@@ -347,7 +410,8 @@ const COLLECTIONS = {
   CONTACT: 'nexus_contact',
   SETTINGS: 'nexus_settings',
   APPS: 'nexus_apps',
-  PORTFOLIO: 'nexus_portfolio'
+  PORTFOLIO: 'nexus_portfolio',
+  PLANES: 'nexus_planes'
 };
 
 // Initialize listeners
@@ -444,6 +508,19 @@ export const storageService = {
       handleFirestoreError(error, OperationType.WRITE, `app_data/${COLLECTIONS.PORTFOLIO}`);
     }
   },
+  getPlanes: () => {
+    const saved = localStorage.getItem('nexus_planes');
+    return saved ? JSON.parse(saved) : defaultPlanes;
+  },
+  savePlanes: async (data: any[]) => {
+    localStorage.setItem('nexus_planes', JSON.stringify(data));
+    notifyChange('planes');
+    try {
+      await setDoc(doc(db, "app_data", COLLECTIONS.PLANES), { items: data });
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, `app_data/${COLLECTIONS.PLANES}`);
+    }
+  },
   
   // Helper to upload initial data to Firestore if it's empty
   seedFirestore: async () => {
@@ -458,6 +535,7 @@ export const storageService = {
         await setDoc(doc(db, "app_data", COLLECTIONS.SETTINGS), { value: defaultSettings });
         await setDoc(doc(db, "app_data", COLLECTIONS.APPS), { items: defaultApps });
         await setDoc(doc(db, "app_data", COLLECTIONS.PORTFOLIO), { items: defaultPortfolio });
+        await setDoc(doc(db, "app_data", COLLECTIONS.PLANES), { items: defaultPlanes });
       }
     } catch (error) {
       // If it's a permission error, we don't want to crash the app on seed attempt

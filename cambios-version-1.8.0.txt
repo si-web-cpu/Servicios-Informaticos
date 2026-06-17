@@ -1,0 +1,73 @@
+======================================================================
+REPORTE DE CAMBIOS - VERSIÓN 1.8.0
+======================================================================
+Fecha: 17 de Junio, 2026
+Autor: Consultoría de Negocios & Rediseño UX/UI Premium
+
+Este documento detalla todas las modificaciones realizadas en la 
+versión 1.8.0 para el reposicionamiento estratégico del negocio.
+
+----------------------------------------------------------------------
+1. REPOSICIONAMIENTO DE MARCA & PROPUESTA DE VALOR (HOME):
+----------------------------------------------------------------------
+* Se sustituyó la antigua propuesta orientada a "Arreglo puntual de computadoras"
+  por un perfil premium de "Consultor y Solucionador de Problemas Tecnológicos".
+* Enfoque comercial explícito en:
+  - Soporte Remoto inmediato (AnyDesk / RustDesk).
+  - Automatización de procesos de oficina y flujos con n8n / Low-Code.
+  - Abonos de Soporte Mensual para ingresos recurrentes sostenibles.
+* Rediseño visual en Home con la paleta oscura de alto contraste Slate-Blue/Emerald,
+  acentuando una imagen moderna, confiable y de alta sofisticación técnica.
+
+----------------------------------------------------------------------
+2. FILTRO DE CALIDAD - POLÍTICAS DE SERVICIO (HOME):
+----------------------------------------------------------------------
+* Se diseñó un panel de "Metodología y Filtro de Calidad" sobre las reglas
+  de contratación del servicio y SLAs, permitiendo filtrar clientes conflictivos:
+  - Soporte bajo agenda estricta y prioridad total a clientes con abonos activos.
+  - Atención remota preferencial en un 95% para agilizar tiempos de respuesta.
+  - Gestión estructurada de incidentes por número corporativo y formulario web 
+    (no chat caótico o llamadas urgentes desorganizadas).
+  - Cobros sistematizados y organizados los días del 1 al 5 de cada mes.
+
+----------------------------------------------------------------------
+3. COMPARADOR DINÁMICO DE ABONOS MENSUALES (SERVICES):
+----------------------------------------------------------------------
+* Se rediseñó por completo el listado de "Abonos Mensuales de Soporte".
+* Estructuración en 3 ofertas específicas claras con límites de cobertura y SLAs:
+  - Plan Profesional: Ideal para trabajadores remotos y autónomos (1 PC + 1 Laptop).
+  - Plan Comercios & Oficinas: Para hasta 5 computadoras con Backups diarios incluidos.
+  - Plan Corporativo & Estudio Contable: SLA crítico de <2 horas, cobertura para 15 PC, 
+    y soporte especializado en software del sector (AFIP, SIAP, Tango).
+
+----------------------------------------------------------------------
+4. INTEGRACIÓN DE GESTIÓN DE ABONOS EN EL PANEL ADMINISTRATIVO (ADMIN):
+----------------------------------------------------------------------
+* Creación de un backend local y relacional sincronizado en Firestore:
+  - Se desacopló la lista rígida de abonos de la UI de la sección de servicios.
+  - Ahora los abonos mensuales se leen directamente desde `storageService.getPlanes()`.
+* Añadido una pestaña "Abonos Mensuales" en la sección de Solo Staff (Admin):
+  - Permite añadir nuevos planes de soporte de forma interactiva.
+  - Permite editar beneficios, actualizar precios en tiempo real, cambiar monedas, 
+    modificar la frecuencia, redefinir SLA o cambiar eslóganes.
+  - Permite destacar un plan como el "Más Popular" marcando un simple checkbox 
+    para añadirle el ribete azul premium de la página de venta de forma automática.
+  - Al presionar guardar, los cambios se sincronizan en caliente en el LocalStorage
+    y de forma persistente en Firestore, actualizándose al instante para todos los 
+    visitantes de la web sin necesidad de tocar código.
+
+----------------------------------------------------------------------
+5. SANITIZACIÓN DE DATOS & COMPATIBILIDAD CON EVOLUTION API (CONTACT):
+----------------------------------------------------------------------
+* Se modificó el formulario de contacto para cumplir con las exigencias de 
+  Evolution API (que trabaja sin el signo "+"):
+  - Se colocó un indicador explícito de color ámbar avisando al usuario que lo ingrese "SIN el signo +".
+  - Se implementó una función automática y reactiva en el Input de Teléfono (`onChange`)
+    que elimina instantáneamente cualquier signo "+" que el cliente escriba o pegue por error,
+    previniendo fallas de envío al backend y cuidando la UX.
+
+----------------------------------------------------------------------
+6. ACTUALIZACIONES DE PLATAFORMA & FOOTER:
+----------------------------------------------------------------------
+* Actualización oficial de versión en el Footer de la web a la versión 1.8.0.
+* Registro correspondiente en el archivo de historial de cambios `/changelog.txt`.
