@@ -226,16 +226,12 @@ const defaultNews = [
 ];
 
 const defaultServices = [
-  // Servicios Hogar
-  { id: 'h1', title: 'Soporte Técnico de PC', category: 'hogar', icon: 'fa-laptop-medical', desc: 'Mantenimiento preventivo, limpieza física y optimización de software para tu computadora personal.', info: 'Servicio a domicilio o remoto.' },
-  { id: 'h2', title: 'Redes Wi-Fi', category: 'hogar', icon: 'fa-wifi', desc: 'Instalación y configuración de routers, repetidores y extensores para cobertura total en tu casa.', info: 'Eliminamos zonas muertas.' },
-  
-  // Servicios Negocios
-  { id: 'n1', title: 'Soporte Técnico de PC', category: 'negocios', icon: 'fa-microchip', desc: 'Mantenimiento de estaciones de trabajo para asegurar la continuidad de tu negocio.', info: 'Planes mensuales disponibles.' },
-  { id: 'n2', title: 'Redes Wi-Fi', category: 'negocios', icon: 'fa-network-wired', desc: 'Diseño e implementación de redes robustas y seguras para oficinas y locales comerciales.', info: 'Segmentación de redes para invitados.' },
-  { id: 'n3', title: 'Diseño Web IA', category: 'negocios', icon: 'fa-wand-magic-sparkles', desc: 'Creación de sitios web modernos optimizados con herramientas de inteligencia artificial.', info: 'Presencia online profesional.' },
-  { id: 'n4', title: 'Asesoramiento IT Emprendedores', category: 'negocios', icon: 'fa-lightbulb', desc: 'Consultoría estratégica para elegir las mejores herramientas digitales para tu nuevo proyecto.', info: 'Optimiza tu inversión.' },
-  { id: 'n5', title: 'Backups de Datos', category: 'negocios', icon: 'fa-database', desc: 'Sistemas de respaldo automático para proteger la información vital de tu emprendimiento.', info: 'Seguridad ante todo.' }
+  { id: 'cs1', title: 'Soporte Windows & Mac', category: 'remoto', icon: 'fa-laptop-medical', desc: 'Solución remota de fallas lógicas, desinstalación de virus, actualización segura de sistemas operativos y resolución de pantallas azules.', info: 'Respuesta remota en minutos.' },
+  { id: 'cs2', title: 'Microsoft Office & Outlook', category: 'remoto', icon: 'fa-envelope-open-text', desc: 'Instalación corporativa de Office 365, migración de correos Outlook sin pérdida de historial, calendarios sincronizados y archivos pst corruptos.', info: 'Sincronización impecable.' },
+  { id: 'cs3', title: 'Sistemas Contables', category: 'sistemas', icon: 'fa-calculator', desc: 'Soporte y configuración de software específico para estudios contables y oficinas corporativas (SIAP, Tango Gestión, plataformas AFIP, etc).', info: 'Garantiza la continuidad.' },
+  { id: 'cs4', title: 'Backup Continuo & Nube', category: 'sistemas', icon: 'fa-cloud-arrow-up', desc: 'Implementación de respaldos redundantes automáticos en la nube (Google Drive, OneDrive o servidores privados) para resguardar tus datos impositivos e históricos.', info: 'Evita perder tu información.' },
+  { id: 'cs5', title: 'Optimización de Redes Wi-Fi', category: 'sistemas', icon: 'fa-wifi', desc: 'Análisis de frecuencias, segmentación segura de red de invitados para comercios y eliminación estricta de zonas sin cobertura remota.', info: 'Conectividad sin fisuras.' },
+  { id: 'cs6', title: 'Asesoramiento Tecnológico', category: 'remoto', icon: 'fa-user-tie', desc: 'Consultas estratégicas para elegir licencias, comprar equipos adecuados para tu oficina sin desperdiciar dinero y auditoría de ciberseguridad avanzada.', info: 'Inversión inteligente.' }
 ];
 
 const defaultContact = {

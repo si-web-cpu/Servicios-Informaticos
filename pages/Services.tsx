@@ -16,7 +16,7 @@ interface Project {
 const Services: React.FC = () => {
   const [filter, setFilter] = useState<'todos' | 'remoto' | 'sistemas'>('todos');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [services, setServices] = useState<any[]>([]);
+  const [services, setServices] = useState<any[]>(() => storageService.getServices());
   const [planesMensuales, setPlanesMensuales] = useState<any[]>(() => storageService.getPlanes());
 
   useEffect(() => {
@@ -24,24 +24,13 @@ const Services: React.FC = () => {
       if (event.detail.key === 'planes') {
         setPlanesMensuales(storageService.getPlanes());
       }
+      if (event.detail.key === 'services') {
+        setServices(storageService.getServices());
+      }
     };
 
     window.addEventListener('nexus_storage_update', handleUpdate);
     return () => window.removeEventListener('nexus_storage_update', handleUpdate);
-  }, []);
-
-  useEffect(() => {
-    // Al utilizar servicios más orientados a consultor remoto, actualizamos por defecto
-    const customConsultingServices = [
-      { id: 'cs1', title: 'Soporte Windows & Mac', category: 'remoto', icon: 'fa-laptop-medical', desc: 'Solución remota de fallas lógicas, desinstalación de virus, actualización segura de sistemas operativos y resolución de pantallas azules.', info: 'Respuesta remota en minutos.' },
-      { id: 'cs2', title: 'Microsoft Office & Outlook', category: 'remoto', icon: 'fa-envelope-open-text', desc: 'Instalación corporativa de Office 365, migración de correos Outlook sin pérdida de historial, calendarios sincronizados y archivos pst corruptos.', info: 'Sincronización impecable.' },
-      { id: 'cs3', title: 'Sistemas Contables', category: 'sistemas', icon: 'fa-calculator', desc: 'Soporte y configuración de software específico para estudios contables y oficinas corporativas (SIAP, Tango Gestión, plataformas AFIP, etc).', info: 'Garantiza la continuidad.' },
-      { id: 'cs4', title: 'Backup Continuo & Nube', category: 'sistemas', icon: 'fa-cloud-arrow-up', desc: 'Implementación de respaldos redundantes automáticos en la nube (Google Drive, OneDrive o servidores privados) para resguardar tus datos impositivos e históricos.', info: 'Evita perder tu información.' },
-      { id: 'cs5', title: 'Optimización de Redes Wi-Fi', category: 'sistemas', icon: 'fa-wifi', desc: 'Análisis de frecuencias, segmentación segura de red de invitados para comercios y eliminación estricta de zonas sin cobertura remota.', info: 'Conectividad sin fisuras.' },
-      { id: 'cs6', title: 'Asesoramiento Tecnológico', category: 'remoto', icon: 'fa-user-tie', desc: 'Consultas estratégicas para elegir licencias, comprar equipos adecuados para tu oficina sin desperdiciar dinero y auditoría de ciberseguridad avanzada.', info: 'Inversión inteligente.' }
-    ];
-
-    setServices(customConsultingServices);
   }, []);
 
   const portfolioProjects: Project[] = storageService.getPortfolio();

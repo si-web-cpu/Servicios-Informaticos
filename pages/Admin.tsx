@@ -524,7 +524,7 @@ const Admin: React.FC = () => {
 
         {activeTab === 'services' && (
           <div className="space-y-6">
-            <button onClick={() => setEditService({ title: '', category: 'hogar', icon: 'fa-microchip', desc: '', info: '' })} className="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-100 flex items-center gap-2">
+            <button onClick={() => setEditService({ title: '', category: 'remoto', icon: 'fa-laptop-medical', desc: '', info: '' })} className="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-100 flex items-center gap-2">
               <i className="fa-solid fa-plus"></i> Añadir Servicio
             </button>
             <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
@@ -533,19 +533,27 @@ const Admin: React.FC = () => {
                   <tr>
                     <th className="px-6 py-4 font-bold text-slate-700">Servicio</th>
                     <th className="px-6 py-4 font-bold text-slate-700">Categoría</th>
+                    <th className="px-6 py-4 font-bold text-slate-700">Información / SLA Corto</th>
                     <th className="px-6 py-4 text-right font-bold text-slate-700">Acciones</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {services.map((s: any) => (
                     <tr key={s.id} className="hover:bg-slate-50/50 transition-colors">
-                      <td className="px-6 py-4 font-medium text-slate-800">{s.title}</td>
-                      <td className="px-6 py-4 capitalize">
-                        <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${s.category === 'hogar' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
-                          {s.category}
+                      <td className="px-6 py-4">
+                        <div className="font-bold text-slate-800 flex items-center gap-2">
+                          <i className={`fa-solid ${s.icon} text-slate-400 text-xs`}></i>
+                          {s.title}
+                        </div>
+                        <div className="text-xs text-slate-400 mt-1 max-w-sm line-clamp-1">{s.desc}</div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${s.category === 'remoto' ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700'}`}>
+                          {s.category === 'remoto' ? 'Atención Remota' : 'Sistemas & Backups'}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-right space-x-3">
+                      <td className="px-6 py-4 text-xs italic text-slate-500 font-medium">{s.info || '-'}</td>
+                      <td className="px-6 py-4 text-right space-x-3 text-xs sm:text-sm">
                         <button onClick={() => setEditService(s)} className="text-blue-600 font-bold hover:underline">Editar</button>
                         <button onClick={() => handleDeleteService(s.id)} className="text-red-600 font-bold hover:underline">Borrar</button>
                       </td>
@@ -1285,23 +1293,27 @@ const Admin: React.FC = () => {
               </h2>
               <form onSubmit={handleSaveService} className="space-y-4">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nombre del Servicio</label>
-                  <input type="text" required className="w-full border p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" value={editService.title} onChange={e => setEditService({...editService, title: e.target.value})} />
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nombre el Servicio</label>
+                  <input type="text" required className="w-full border p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" value={editService.title} onChange={e => setEditService({...editService, title: e.target.value})} placeholder="Ej: Soporte Windows & Mac" />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Público Objetivo</label>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Público y Tipo de Servicio</label>
                   <select 
                     className="w-full border p-3 rounded-xl bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500"
                     value={editService.category}
                     onChange={e => setEditService({...editService, category: e.target.value})}
                   >
-                    <option value="hogar">Uso Residencial (Hogar)</option>
-                    <option value="negocios">Uso Profesional (Negocios)</option>
+                    <option value="remoto">Atención Remota (💻 Soporte Remoto)</option>
+                    <option value="sistemas">Sistemas & Infraestructura (⚙️ Sistemas & Backups)</option>
                   </select>
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Icono (FontAwesome class, ej: fa-wifi)</label>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Icono (FontAwesome class, ej: fa-laptop-medical)</label>
                   <input type="text" required className="w-full border p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" value={editService.icon} onChange={e => setEditService({...editService, icon: e.target.value})} />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Información Corta de Destacado / Meta de SLA</label>
+                  <input type="text" className="w-full border p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" value={editService.info || ''} onChange={e => setEditService({...editService, info: e.target.value})} placeholder="Ej: Respuesta remota en minutos." />
                 </div>
                 <div className="space-y-1">
                   <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Descripción del Servicio</label>
