@@ -9,6 +9,7 @@ import { initFirestoreSync, storageService } from './services/storageService';
 const Home = lazy(() => import('./pages/Home'));
 const About = lazy(() => import('./pages/About'));
 const Services = lazy(() => import('./pages/Services'));
+const Pricing = lazy(() => import('./pages/Pricing'));
 const Automation = lazy(() => import('./pages/Automation'));
 const News = lazy(() => import('./pages/News'));
 const NewsDetail = lazy(() => import('./pages/NewsDetail'));
@@ -41,6 +42,7 @@ const App: React.FC = () => {
               <Route path="/" element={<Home />} />
               <Route path="/nosotros" element={<About />} />
               <Route path="/servicios" element={<Services />} />
+              <Route path="/planes" element={<Pricing />} />
               <Route path="/automatizaciones" element={<Automation />} />
               <Route path="/noticias" element={<News />} />
               <Route path="/noticias/:id" element={<NewsDetail />} />

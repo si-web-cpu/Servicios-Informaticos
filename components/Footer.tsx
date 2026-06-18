@@ -66,6 +66,7 @@ const Footer: React.FC = () => {
               <li><Link to="/" className="hover:text-blue-400 transition-colors">Inicio</Link></li>
               <li><Link to="/nosotros" className="hover:text-blue-400 transition-colors">Quiénes Somos</Link></li>
               <li><Link to="/servicios" className="hover:text-blue-400 transition-colors">Servicios</Link></li>
+              <li><Link to="/planes" className="hover:text-blue-400 transition-colors">Planes y Precios</Link></li>
               <li><Link to="/automatizaciones" className="hover:text-blue-400 transition-colors">Automatizaciones</Link></li>
               <li><Link to="/noticias" className="hover:text-blue-400 transition-colors">Noticias</Link></li>
               <li><Link to="/aplicaciones" className="hover:text-blue-400 transition-colors">Aplicaciones</Link></li>
@@ -140,7 +141,7 @@ const Footer: React.FC = () => {
 
             {/* Versión de la Web */}
             <div className="text-[9px] uppercase tracking-[0.2em] opacity-30 hover:opacity-60 transition-opacity cursor-default">
-              <span>Versión 1.8.0</span>
+              <span>Versión 1.9.0</span>
             </div>
           </div>
         </div>

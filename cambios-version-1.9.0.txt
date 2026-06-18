@@ -1,0 +1,66 @@
+======================================================================
+REPORTE DE CAMBIOS - VERSIÓN 1.9.0
+======================================================================
+Fecha: 18 de Junio, 2026
+Autor: Consultoría de Negocios & Rediseño UX/UI Premium
+
+Este documento detalla todas las modificaciones realizadas en la 
+versión 1.9.0, respondiendo al feedback reciente del cliente y ampliando
+la estructura comercial del sitio web.
+
+----------------------------------------------------------------------
+1. CORRECCIONES DE TEXTOS Y REDACCIÓN PERSUASIVA (HOME & ABOUT):
+----------------------------------------------------------------------
+* En Home (Sección "Situaciones Críticas"):
+  - Se sustituyó "¿Miedo constante a perder tus archivos?" por un disparador emocional y reflexivo mucho más potente: "¿Qué pasaría si mañana perdieras toda tu información?".
+* En Home (Tarjeta de "Mantenimiento Preventivo Integral"):
+  - Reemplazo del texto descriptivo antiguo "Limpieza estricta de virus..." por uno con mayor foco en beneficios reales y proactivos: "Recuperamos el rendimiento de equipos lentos, eliminamos problemas acumulados y reducimos fallas antes de que afecten tu trabajo.".
+* En Home (Botones de acción de Servicios):
+  - Se suavizó el tono comercial formal cambiando los enlaces de "Consultar este servicio" por la llamada a la acción "Solicitar Información", logrando una interacción más amigable, cercana y menos solemne.
+* En Nosotros (About):
+  - Corrección cronológica de trayectoria profesional: se actualizó "Desde hace más de 25 años..." por "Desde hace más de 33 años, brindamos asistencia personalizada...". ¡Casi un tercio de siglo de experiencia real volcado al servicio!
+
+----------------------------------------------------------------------
+2. NUEVA SECCIÓN DE VENTAS CENTRALIZADA: "PLANES Y PRECIOS" (PRICING):
+----------------------------------------------------------------------
+* Creación de la página dedicada `/planes` ("Planes y Precios"):
+  - Integración en la cabecera (Navbar) y pie de página (Footer) para una navegación natural y fluida.
+  - Diseño responsive de alta fidelidad visual utilizando componentes animados con efectos de entrada suaves (`ScrollReveal`).
+* Organizada de forma interactiva en dos grandes categorías con un selector estilizado:
+  - 🏠 Planes para el Hogar:
+    - Plan Hogar Esencial ($14.900/mes): Soporte prioritario por WhatsApp, configuración de Windows y periféricos.
+    - Plan Hogar Plus ($24.9500/mes): Cobertura extendida para teletrabajo exigente (home office, correos, optimizaciones).
+  - 💼 Planes para Profesionales y Negocios:
+    - Plan Negocio Esencial ($39.900/mes): Soporte remoto ilimitado, sistemas locales y WhatsApp preferencial. Highly persuasive "valor percibido".
+    - Plan Negocio Plus ($69.900/mes): Hasta 3 equipos, revisiones periódicas y copias de seguridad automatizadas con supervisión activa.
+    - Plan Negocio Premium ($119.900/mes): Atención preferencial #1 con automatizaciones de flujo de trabajo y consultoría avanzada.
+* Cada plan se enlaza de forma automática a WhatsApp preconfigurando un mensaje de consulta personalizado que menciona específicamente el abono seleccionado y su tarifa vigente.
+* Desvinculación de los abonos antiguos hardcodeados de la sección genérica de `/servicios` para evitar redundancias desordenadas, centralizando toda la oferta de abonos en este nuevo portal de tarifas.
+
+----------------------------------------------------------------------
+3. CLÁUSULAS DE SOPORTE CLARAS Y TRANSPARENTES (PRICING):
+----------------------------------------------------------------------
+* Incorporación de una nota explicativa distinguible, enmarcada con ribete azul e ícono informativo:
+  "Soporte prioritariamente remoto. Si el problema requiere intervención física, se coordina una visita presencial según disponibilidad y ubicación."
+  Garantiza el correcto alcance legal del servicio manteniendo un encuadre profesional inmejorable.
+* Diseño de una tarjeta de "Convenios a Medida" en tonos ámbar para empresas u oficinas de más de 3 puestos de trabajo con requerimientos especiales.
+
+----------------------------------------------------------------------
+4. TABLA COMPARATIVA DIRECTA (PRICING):
+----------------------------------------------------------------------
+* Diseño de una tabla de comparación estructural de primer nivel al pie de la página de precios:
+  - Enfocada especialmente en las opciones de negocio (Esencial, Plus y Premium).
+  - Eliminación de la columna genérica "Característica" para simplificar y centrar la lectura horizontal del usuario.
+  - El espacio anteriormente indicado con "-" fue optimizado y sustituido por la inclusión de "WhatsApp prioritario" para el segmento de entrada, aumentando el valor percibido del Plan Esencial.
+
+----------------------------------------------------------------------
+5. DESACOPLE Y ALIMENTACIÓN DESDE STAFF (ADMIN & STORAGE):
+----------------------------------------------------------------------
+* Migración y actualización de los datos semilla de abonos en `storageService.ts` a la nueva estructura de planes Hogar y Negocio.
+* Quedaron vinculados de forma completamente dinámica para que puedan ser modificados al instante en el Panel de Administración (Staff) si el titular del negocio decide realizar cambios en tarifas, eslóganes, SLA o beneficios de la comparativa, persistiendo los datos sin intervención en el código fuente.
+
+----------------------------------------------------------------------
+6. ACTUALIZACIÓN DEL FOOTER Y VERSIONADO:
+----------------------------------------------------------------------
+* Salto oficial de versión en el Footer de la web de la versión 1.8.0 a la versión 1.9.0.
+* Registro histórico correspondiente en el archivo de logs del sistema `/changelog.txt`.

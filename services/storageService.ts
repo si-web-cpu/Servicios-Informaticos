@@ -334,63 +334,102 @@ const defaultApps: any[] = [
 
 const defaultPlanes = [
   {
-    name: 'Plan Profesional',
-    slug: 'profesional',
-    tagline: 'Ideal para autónomos, profesionales independientes y teletrabajo exigente.',
-    price: '15',
-    currency: 'USD',
+    name: 'Plan Hogar Esencial',
+    slug: 'hogar-esencial',
+    tagline: 'Ideal para usuarios domésticos.',
+    price: '14.900',
+    currency: 'ARS',
     frequency: 'mes',
     benefits: [
-      'Soporte técnico remoto prioritario (Windows, macOS)',
-      'Resolución de problemas de Outlook, Word, Excel y PDF',
-      'Configuración de cuentas de correo corporativo / IMAP',
-      'Optimización y limpieza lógica de sistema semestral',
-      'Licencia Antivirus gestionada en la nube (1 año)',
-      'Asistencia por AnyDesk / RustDesk segura'
+      'Soporte remoto prioritario',
+      'Ayuda por WhatsApp',
+      'Diagnóstico de problemas',
+      'Configuración básica de Windows',
+      'Office e impresoras'
     ],
-    limits: 'Válido para 1 PC de escritorio + 1 Notebook personal.',
-    sla: 'Respuesta en menos de 12 horas hábiles.',
-    badge: 'Básico',
+    limits: 'Tengo a quién llamar cuando algo falla.',
+    sla: 'Soporte prioritario por WhatsApp.',
+    badge: 'Hogar Esencial',
     isPopular: false
   },
   {
-    name: 'Plan Comercios & Oficinas',
-    slug: 'comercios',
-    tagline: 'Para locales comerciales, oficinas de atención y pymes de servicio.',
-    price: '45',
-    currency: 'USD',
+    name: 'Plan Hogar Plus',
+    slug: 'hogar-plus',
+    tagline: 'Todo lo anterior más cobertura para teletrabajo exigente.',
+    price: '24.900',
+    currency: 'ARS',
     frequency: 'mes',
     benefits: [
-      'Soporte técnico remoto ultrarrápido (Todos los equipos)',
-      'Configuración y solución de impresoras térmicas y de red',
-      'Copia de seguridad (Backup) diario de facturación',
-      'Asistencia en red local Wi-Fi / Conexiones caídas',
-      'Soporte para sistemas de punto de venta (POS)',
-      'Mantenimiento preventivo presencial bimestral coordinado'
+      'Todo lo del Plan Esencial',
+      'Outlook y correos corporativos',
+      'Optimización periódica del sistema',
+      'Revisión preventiva en la nube',
+      'Prioridad de atención superior',
+      'Asistencia remota para home office'
     ],
-    limits: 'Soporte completo para hasta 5 computadoras conectadas.',
-    sla: 'SLA Prioritario: Respuesta en menos de 6 horas hábiles.',
+    limits: 'Trabajo desde casa y necesito que todo funcione.',
+    sla: 'SLA Prioritario remota rápida.',
+    badge: 'Hogar Plus',
+    isPopular: false
+  },
+  {
+    name: 'Plan Negocio Esencial',
+    slug: 'negocio-esencial',
+    tagline: 'Para comercios, estudios independientes y profesionales.',
+    price: '39.900',
+    currency: 'ARS',
+    frequency: 'mes',
+    benefits: [
+      'Soporte remoto ilimitado',
+      'Sistemas administrativos en orden',
+      'Configuración de Outlook corporativo',
+      'Impresoras térmicas y de red local',
+      'WhatsApp Prioritario Preferencial',
+      'Diagnóstico preventivo regular'
+    ],
+    limits: 'No quiero perder una mañana por un problema informático.',
+    sla: 'SLA Comercial rápido.',
+    badge: 'Negocio Esencial',
+    isPopular: false
+  },
+  {
+    name: 'Plan Negocio Plus',
+    slug: 'negocio-plus',
+    tagline: 'Todo lo anterior con resguardo automatizado y supervisado.',
+    price: '69.900',
+    currency: 'ARS',
+    frequency: 'mes',
+    benefits: [
+      'Todo lo del Plan Negocio Esencial',
+      'Soporte completo para hasta 3 equipos',
+      'Copias de seguridad supervisadas silenciosas',
+      'Servidor o NAS y revisión mensual',
+      'Alta prioridad de urgencias',
+      'Asesoramiento tecnológico continuo'
+    ],
+    limits: 'Quiero prevenir problemas antes de que aparezcan.',
+    sla: 'SLA Premium: < 4 horas.',
     badge: 'Recomendado',
     isPopular: true
   },
   {
-    name: 'Corporativo & Estudio Contable',
-    slug: 'contable',
-    tagline: 'Abono de alta intensidad para estudios de contadores, agencias y pymes.',
-    price: '95',
-    currency: 'USD',
+    name: 'Plan Negocio Premium',
+    slug: 'negocio-premium',
+    tagline: 'Mantenimiento del máximo nivel operativo y automatización inteligente.',
+    price: '119.900',
+    currency: 'ARS',
     frequency: 'mes',
     benefits: [
-      'Soporte crítico ilimitado remoto prioritario #1',
-      'Mantenimiento e instalación de software contable (SIAP, AFIP, Tango...)',
-      'Configuración avanzada de Microsoft Office 350 corporativo / Office 365',
-      'Políticas estrictas de Backup local + Nube (Redundancia)',
-      'Auditoría y parche de seguridad mensual continuo',
-      'Visita presencial coordinada mensual para revisión física'
+      'Todo lo del Plan Negocio Plus',
+      'Atención preferencial y personalizada',
+      'Automatizaciones básicas (Forms, Drive, Hojas de cálculo)',
+      'Monitoreo proactivo en vivo de discos y red',
+      'Consultoría tecnológica e informática avanzada',
+      'Planificación de mejoras trimestrales'
     ],
-    limits: 'Soporte especializado para hasta 15 estaciones de trabajo.',
-    sla: 'SLA Crítico: Respuesta urgente en menos de 2 horas.',
-    badge: 'Premium',
+    limits: 'Quiero olvidarme de los problemas informáticos.',
+    sla: 'SLA Crítico: < 2 horas prioritario.',
+    badge: 'Premium Especial',
     isPopular: false
   }
 ];
@@ -509,7 +548,19 @@ export const storageService = {
   },
   getPlanes: () => {
     const saved = localStorage.getItem('nexus_planes');
-    return saved ? JSON.parse(saved) : defaultPlanes;
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (!parsed.some((p: any) => p.slug && p.slug.includes('hogar'))) {
+          localStorage.setItem('nexus_planes', JSON.stringify(defaultPlanes));
+          return defaultPlanes;
+        }
+        return parsed;
+      } catch (e) {
+        return defaultPlanes;
+      }
+    }
+    return defaultPlanes;
   },
   savePlanes: async (data: any[]) => {
     localStorage.setItem('nexus_planes', JSON.stringify(data));

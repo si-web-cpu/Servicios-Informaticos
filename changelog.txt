@@ -5,7 +5,27 @@ Este archivo registra de forma interna el historial de cambios, mejoras, correcc
 y nuevas funcionalidades que se han implementado en la plataforma web.
 
 ----------------------------------------------------------------------
-VERSIÓN 1.8.0 - 2026-06-17 [ACTUAL]
+VERSIÓN 1.9.0 - 2026-06-18 [ACTUAL]
+----------------------------------------------------------------------
+* NUEVA SECCIÓN "PLANES Y PRECIOS" INTEGRADA:
+  - Diseño y desarrollo de la nueva landing de abonos mensuales `/planes` con un selector dinámico para Hogar (Plan Hogar Esencial y Plan Hogar Plus) y Negocios (Plan Negocio Esencial, Plan Negocio Plus y Plan Negocio Premium).
+  - Centralización de los abonos en la base de datos de semillas de `storageService.ts`, permitiendo cargarlos, modificarlos y guardarlos dinámicamente desde el panel de Staff (Admin page) en tiempo real.
+  - Vinculación directa e interactiva de cada abono a WhatsApp utilizando mensajes personalizados que especifican tarifa elegida y nombre del plan.
+  - Inclusión de una nota de alcance distinguible y clara: "Soporte prioritariamente remoto. Si el problema requiere intervención física, se coordina una visita presencial...".
+  - Inclusión de una sección de consulta para contratos de servicios diseñados a medida ("Convenios a Medida").
+  - Diseño de una tabla comparativa horizontal para planes de negocios, optimizando legibilidad, removiendo la columna de "Característica" redundante e integrando la cláusula "WhatsApp prioritario" como beneficio de entrada en el Plan Esencial.
+  - Remoción definitiva de los abonos mensuales hardcodeados de la página principal de Servicios para evitar dobles listings y centrar el flujo de venta.
+* CORRECCIONES Y REPOBLADO DE TEXTO PERSUASIVO EN SECCIONES DE HOME Y ABOUT:
+  - Nosotros (About): Ajuste exacto de trayectoria profesional de "más de 25 años" a "más de 33 años" de experiencia intachable en el sector.
+  - Home (Situaciones Críticas): Modificación de tarjeta de seguridad cambiando "Miedo constante a perder tus archivos" por "¿Qué pasaría si mañana perdieras toda tu información?".
+  - Home (Mantenimiento Preventivo): Redacción modernizada del texto descriptor del servicio por uno centrado en prevención y rendimiento de equipos lentos: "Recuperamos el rendimiento de equipos lentos, eliminamos problemas acumulados y reducimos fallas antes de que afecten tu trabajo.".
+  - Home (CTAs de tarjetas): Modificación de las llamadas a la acción "Consultar este servicio" por el texto amigable "Solicitar Información".
+* CONTROL DE VERSIÓN Y ARCHIVOS:
+  - Actualización oficial en Footer a Versión 1.9.0.
+  - Creación del reporte extendido de cambios en `/cambios-version-1.9.0.txt`.
+
+----------------------------------------------------------------------
+VERSIÓN 1.8.0 - 2026-06-17
 ----------------------------------------------------------------------
 * REPOSICIONAMIENTO Y REDISEÑO ESTRATÉGICO PREMIUM:
   - Reposicionamiento de marca: Se cambió de "Técnico reparador de computadoras" a un perfil de "Consultor y Solucionador de Problemas Tecnológicos" de alta fiabilidad.

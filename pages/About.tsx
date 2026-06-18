@@ -13,7 +13,7 @@ const About: React.FC = () => {
               En <span className="font-bold text-blue-600">Servicios Informáticos</span>, nacimos con la misión de democratizar el acceso al soporte técnico de alta calidad. Creemos que no hace falta ser una multinacional para tener sistemas eficientes, seguros y modernos.
             </p>
             <p className="text-lg text-slate-600 mb-6">
-              Desde hace más de 25 años, brindamos asistencia personalizada a cientos de hogares y pequeños emprendimientos que buscaban un socio tecnológico de confianza. No solo reparamos equipos, construimos relaciones de largo plazo.
+              Desde hace más de 33 años, brindamos asistencia personalizada a cientos de hogares y pequeños emprendimientos que buscaban un socio tecnológico de confianza. No solo reparamos equipos, construimos relaciones de largo plazo.
             </p>
             <div className="grid grid-cols-2 gap-6 mt-8">
               <div className="border-l-4 border-blue-600 pl-4">
