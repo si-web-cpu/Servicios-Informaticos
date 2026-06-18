@@ -13,7 +13,7 @@ const Admin: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [user, setUser] = useState('');
   const [pass, setPass] = useState('');
-  const [activeTab, setActiveTab] = useState<'news' | 'services' | 'planes' | 'contact' | 'settings' | 'stats' | 'apps' | 'portfolio' | 'icons'>('news');
+  const [activeTab, setActiveTab] = useState<'news' | 'services' | 'planes' | 'contact' | 'settings' | 'stats' | 'apps' | 'portfolio' | 'icons' | 'emails'>('news');
   
   // Feedback State
   const [feedback, setFeedback] = useState<{msg: string, type: 'success' | 'error'} | null>(null);
@@ -23,6 +23,8 @@ const Admin: React.FC = () => {
   const [news, setNews] = useState(storageService.getNews());
   const [services, setServices] = useState(storageService.getServices());
   const [planes, setPlanes] = useState(() => storageService.getPlanes());
+  const [emails, setEmails] = useState<string[]>(() => storageService.getEmails());
+  const [newEmailInput, setNewEmailInput] = useState('');
   const [contact, setContact] = useState(storageService.getContact());
   const [settings, setSettings] = useState(storageService.getSettings());
   const [apps, setApps] = useState(storageService.getApps());
@@ -39,12 +41,24 @@ const Admin: React.FC = () => {
   const BASE_VISITS = 1248;
 
   useEffect(() => {
+    const handleUpdate = (event: any) => {
+      if (event.detail.key === 'emails') {
+        const freshEmails = storageService.getEmails();
+        setEmails(freshEmails);
+      }
+    };
+    window.addEventListener('nexus_storage_update', handleUpdate);
+    return () => window.removeEventListener('nexus_storage_update', handleUpdate);
+  }, []);
+
+  useEffect(() => {
     if (!isFirebaseConfigured) {
       console.warn("Firebase no está configurado (VITE_FIREBASE_API_KEY no es válida). El inicio de sesión con Google estará desactivado.");
       return;
     }
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user && user.email === 'kakarotto.jj@gmail.com') {
+      const allowedEmails = storageService.getEmails();
+      if (user && user.email && allowedEmails.includes(user.email.toLowerCase().trim())) {
         setIsFirebaseAuthenticated(true);
         setCurrentUser(user);
         // If they are logged in via Firebase, we consider them authenticated for the panel too
@@ -103,7 +117,8 @@ const Admin: React.FC = () => {
     }
     try {
       const result = await signInWithPopup(auth, googleProvider);
-      if (result.user.email !== 'kakarotto.jj@gmail.com') {
+      const allowedEmails = storageService.getEmails().map((e: string) => e.toLowerCase().trim());
+      if (!result.user.email || !allowedEmails.includes(result.user.email.toLowerCase().trim())) {
         await signOut(auth);
         alert('Acceso denegado. Esta cuenta no tiene permisos de administrador.');
       }
@@ -286,6 +301,36 @@ const Admin: React.FC = () => {
     }, 'Abono mensual eliminado');
   };
 
+  const handleAddEmail = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newEmailInput.trim()) return;
+    const cleanEmail = newEmailInput.toLowerCase().trim();
+    if (emails.includes(cleanEmail)) {
+      showFeedback('Ese correo ya está autorizado', 'error');
+      return;
+    }
+    simulateSave(async () => {
+      const updated = [...emails, cleanEmail];
+      setEmails(updated);
+      await storageService.saveEmails(updated);
+      setNewEmailInput('');
+    }, 'Correo autorizado añadido');
+  };
+
+  const handleDeleteEmail = (emailToDelete: string) => {
+    const cleanEmail = emailToDelete.toLowerCase().trim();
+    if (cleanEmail === 'kakarotto.jj@gmail.com') {
+      alert('No puedes eliminar el correo del propietario principal de la cuenta.');
+      return;
+    }
+    if (!window.confirm(`¿Seguro que deseas revocar el acceso para ${emailToDelete}?`)) return;
+    simulateSave(async () => {
+      const updated = emails.filter((e: string) => e.toLowerCase().trim() !== cleanEmail);
+      setEmails(updated);
+      await storageService.saveEmails(updated);
+    }, 'Acceso revocado exitosamente');
+  };
+
   const handleSaveContact = (e: React.FormEvent) => {
     e.preventDefault();
     simulateSave(async () => {
@@ -429,16 +474,23 @@ const Admin: React.FC = () => {
         </div>
 
         <div className="flex gap-4 mb-8 border-b border-slate-200 overflow-x-auto pb-1">
-          {['news', 'services', 'planes', 'apps', 'portfolio', 'contact', 'settings', 'stats', 'icons'].map(tab => (
-            <button 
-              key={tab} 
-              onClick={() => setActiveTab(tab as any)}
-              className={`pb-4 px-6 font-bold whitespace-nowrap transition-all relative ${activeTab === tab ? 'text-blue-600' : 'text-slate-400 hover:text-slate-600'}`}
-            >
-              {tab === 'news' ? 'Noticias' : tab === 'services' ? 'Servicios' : tab === 'planes' ? 'Abonos Mensuales' : tab === 'apps' ? 'Apps' : tab === 'portfolio' ? 'Casos Éxito' : tab === 'contact' ? 'Contacto' : tab === 'settings' ? 'Ajustes' : tab === 'stats' ? 'Estadísticas' : 'Iconos'}
-              {activeTab === tab && <div className="absolute bottom-0 left-0 right-0 h-1 bg-blue-600 rounded-t-full"></div>}
-            </button>
-          ))}
+          {(() => {
+            const isOwner = currentUser && currentUser.email && currentUser.email.toLowerCase().trim() === 'kakarotto.jj@gmail.com';
+            const tabsList = ['news', 'services', 'planes', 'apps', 'portfolio', 'contact', 'settings', 'stats', 'icons'];
+            if (isOwner) {
+              tabsList.push('emails');
+            }
+            return tabsList.map(tab => (
+              <button 
+                key={tab} 
+                onClick={() => setActiveTab(tab as any)}
+                className={`pb-4 px-6 font-bold whitespace-nowrap transition-all relative ${activeTab === tab ? 'text-blue-600' : 'text-slate-400 hover:text-slate-600'}`}
+              >
+                {tab === 'news' ? 'Noticias' : tab === 'services' ? 'Servicios' : tab === 'planes' ? 'Abonos Mensuales' : tab === 'apps' ? 'Apps' : tab === 'portfolio' ? 'Casos Éxito' : tab === 'contact' ? 'Contacto' : tab === 'settings' ? 'Ajustes' : tab === 'stats' ? 'Estadísticas' : tab === 'emails' ? 'Accesos Google' : 'Iconos'}
+                {activeTab === tab && <div className="absolute bottom-0 left-0 right-0 h-1 bg-blue-600 rounded-t-full"></div>}
+              </button>
+            ));
+          })()}
         </div>
 
         {activeTab === 'news' && (
@@ -905,6 +957,95 @@ const Admin: React.FC = () => {
                   <span className="text-xs font-bold text-slate-700 mt-1">{icon.name}</span>
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'emails' && (
+          <div className="space-y-6">
+            <div className="flex flex-col lg:flex-row gap-6">
+              {/* Formulario Agregar */}
+              <div className="flex-1 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+                <h3 className="text-lg font-bold text-slate-800 mb-2 flex items-center gap-2">
+                  <i className="fa-solid fa-user-plus text-blue-600"></i> Autorizar Nuevo Correo
+                </h3>
+                <p className="text-slate-500 text-xs mb-6">
+                  Cualquier persona con el correo de Google ingresado aquí podrá loguearse con su cuenta y realizar cambios en el portal.
+                </p>
+                <form onSubmit={handleAddEmail} className="space-y-4">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Correo Electrónico de Google</label>
+                    <div className="flex gap-2">
+                      <input 
+                        type="email" 
+                        required 
+                        className="flex-grow border p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-sm" 
+                        placeholder="ejemplo@gmail.com o corporativo"
+                        value={newEmailInput}
+                        onChange={e => setNewEmailInput(e.target.value)}
+                      />
+                      <button 
+                        type="submit" 
+                        disabled={isSaving}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold text-sm transition-colors text-nowrap disabled:opacity-55"
+                      >
+                        {isSaving ? 'Guardando...' : 'Autorizar'}
+                      </button>
+                    </div>
+                  </div>
+                </form>
+                
+                <div className="mt-8 p-4 bg-amber-50 rounded-2xl border border-amber-100/60 flex gap-3 text-amber-800 text-xs">
+                  <i className="fa-solid fa-shield-halved text-lg text-amber-600 shrink-0 mt-0.5"></i>
+                  <p className="leading-relaxed font-medium">
+                    <strong className="block mb-0.5">Filtro de Seguridad Especial:</strong> 
+                    Solo tú (como propietario principal con el correo <code className="bg-amber-100 px-1 py-0.5 rounded text-amber-900 font-bold">kakarotto.jj@gmail.com</code>) tienes acceso para visualizar esta pestaña de administración y gestionar quién más puede entrar.
+                  </p>
+                </div>
+              </div>
+
+              {/* Listado de Correos */}
+              <div className="flex-1 bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+                <h3 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+                  <i className="fa-solid fa-users-gear text-blue-600"></i> Administradores de Google con Acceso ({emails.length})
+                </h3>
+                
+                <div className="divide-y divide-slate-100">
+                  {emails.map((email: string) => {
+                    const isMainOwner = email.toLowerCase().trim() === 'kakarotto.jj@gmail.com';
+                    return (
+                      <div key={email} className="py-4 flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${isMainOwner ? 'bg-emerald-50 text-emerald-600' : 'bg-blue-50 text-blue-600'}`}>
+                            <i className={isMainOwner ? "fa-solid fa-crown text-xs" : "fa-solid fa-user text-xs"}></i>
+                          </div>
+                          <div className="min-w-0">
+                            <p className="font-medium text-slate-800 text-sm truncate">{email}</p>
+                            <p className="text-[10px] text-slate-400 uppercase tracking-wider font-bold">
+                              {isMainOwner ? 'Propietario Principal' : 'Administrador Auxiliar'}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        {!isMainOwner ? (
+                          <button 
+                            type="button" 
+                            onClick={() => handleDeleteEmail(email)}
+                            className="w-8 h-8 rounded-lg bg-red-50 hover:bg-red-100 text-red-650 transition-colors flex flex-wrap items-center justify-center shrink-0"
+                            title="Eliminar acceso"
+                          >
+                            <i className="fa-solid fa-trash-can text-sm"></i>
+                          </button>
+                        ) : (
+                          <span className="px-2 py-1 text-[9px] font-bold bg-emerald-100 text-emerald-800 rounded-lg select-none">
+                            Fijo
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           </div>
         )}

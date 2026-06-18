@@ -403,6 +403,8 @@ const notifyChange = (key: string) => {
   window.dispatchEvent(new CustomEvent('nexus_storage_update', { detail: { key } }));
 };
 
+const defaultEmails = ['kakarotto.jj@gmail.com'];
+
 // Firestore Sync Logic
 const COLLECTIONS = {
   NEWS: 'nexus_news',
@@ -411,7 +413,8 @@ const COLLECTIONS = {
   SETTINGS: 'nexus_settings',
   APPS: 'nexus_apps',
   PORTFOLIO: 'nexus_portfolio',
-  PLANES: 'nexus_planes'
+  PLANES: 'nexus_planes',
+  EMAILS: 'nexus_emails'
 };
 
 // Initialize listeners
@@ -521,6 +524,19 @@ export const storageService = {
       handleFirestoreError(error, OperationType.WRITE, `app_data/${COLLECTIONS.PLANES}`);
     }
   },
+  getEmails: () => {
+    const saved = localStorage.getItem('nexus_emails');
+    return saved ? JSON.parse(saved) : defaultEmails;
+  },
+  saveEmails: async (data: string[]) => {
+    localStorage.setItem('nexus_emails', JSON.stringify(data));
+    notifyChange('emails');
+    try {
+      await setDoc(doc(db, "app_data", COLLECTIONS.EMAILS), { items: data });
+    } catch (error) {
+      handleFirestoreError(error, OperationType.WRITE, `app_data/${COLLECTIONS.EMAILS}`);
+    }
+  },
   
   // Helper to upload initial data to Firestore if it's empty
   seedFirestore: async () => {
@@ -536,6 +552,7 @@ export const storageService = {
         await setDoc(doc(db, "app_data", COLLECTIONS.APPS), { items: defaultApps });
         await setDoc(doc(db, "app_data", COLLECTIONS.PORTFOLIO), { items: defaultPortfolio });
         await setDoc(doc(db, "app_data", COLLECTIONS.PLANES), { items: defaultPlanes });
+        await setDoc(doc(db, "app_data", COLLECTIONS.EMAILS), { items: defaultEmails });
       }
     } catch (error) {
       // If it's a permission error, we don't want to crash the app on seed attempt
