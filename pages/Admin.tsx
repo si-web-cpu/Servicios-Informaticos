@@ -5,7 +5,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import { auth, googleProvider, isFirebaseConfigured } from '../services/firebase';
-import { signInWithPopup, onAuthStateChanged, signOut } from 'firebase/auth';
+import { signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut } from 'firebase/auth';
 
 const Admin: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -56,8 +56,32 @@ const Admin: React.FC = () => {
       console.warn("Firebase no está configurado (VITE_FIREBASE_API_KEY no es válida). El inicio de sesión con Google estará desactivado.");
       return;
     }
+
+    // Check redirect result on mount to process returning user
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result && result.user) {
+          const allowedEmails = storageService.getEmails().map((e: string) => e.toLowerCase().trim());
+          if (!result.user.email || !allowedEmails.includes(result.user.email.toLowerCase().trim())) {
+            signOut(auth).then(() => {
+              alert('Acceso denegado. Esta cuenta no tiene permisos de administrador.');
+            });
+          }
+        }
+      })
+      .catch((error: any) => {
+        console.error("Error al procesar el redireccionamiento de Google:", error);
+        let errorMsg = 'Error al intentar iniciar sesión con Google mediante redirección.';
+        if (error.code === 'auth/unauthorized-domain') {
+          errorMsg = 'Error: Dominio no autorizado. Debes agregar este dominio en la consola de Firebase (Authentication > Settings > Authorized domains).';
+        } else {
+          errorMsg += ` (Código: ${error.code})`;
+        }
+        alert(errorMsg);
+      });
+
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      const allowedEmails = storageService.getEmails();
+      const allowedEmails = storageService.getEmails().map((e: string) => e.toLowerCase().trim());
       if (user && user.email && allowedEmails.includes(user.email.toLowerCase().trim())) {
         setIsFirebaseAuthenticated(true);
         setCurrentUser(user);
@@ -116,12 +140,7 @@ const Admin: React.FC = () => {
       return;
     }
     try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const allowedEmails = storageService.getEmails().map((e: string) => e.toLowerCase().trim());
-      if (!result.user.email || !allowedEmails.includes(result.user.email.toLowerCase().trim())) {
-        await signOut(auth);
-        alert('Acceso denegado. Esta cuenta no tiene permisos de administrador.');
-      }
+      await signInWithRedirect(auth, googleProvider);
     } catch (error: any) {
       console.error("Error detallado de Firebase Auth:", error);
       
@@ -129,12 +148,8 @@ const Admin: React.FC = () => {
       
       if (error.code === 'auth/unauthorized-domain') {
         errorMsg = 'Error: Dominio no autorizado. Debes agregar este dominio en la consola de Firebase (Authentication > Settings > Authorized domains).';
-      } else if (error.code === 'auth/popup-blocked') {
-        errorMsg = 'Error: El navegador bloqueó la ventana emergente. Por favor, permite las ventanas emergentes para este sitio.';
       } else if (error.code === 'auth/operation-not-allowed') {
         errorMsg = 'Error: El inicio de sesión con Google no está habilitado en tu proyecto de Firebase.';
-      } else if (error.code === 'auth/popup-closed-by-user') {
-        errorMsg = 'La ventana de inicio de sesión se cerró antes de completar el proceso.';
       } else {
         errorMsg += ` (Código: ${error.code})`;
       }

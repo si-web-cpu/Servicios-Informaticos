@@ -5,7 +5,17 @@ Este archivo registra de forma interna el historial de cambios, mejoras, correcc
 y nuevas funcionalidades que se han implementado en la plataforma web.
 
 ----------------------------------------------------------------------
-VERSIÓN 1.9.0 - 2026-06-18 [ACTUAL]
+VERSIÓN 1.9.1 - 2026-07-16 [ACTUAL]
+----------------------------------------------------------------------
+* CORRECCIÓN DE AUTENTICACIÓN CON GOOGLE (ACCESO STAFF):
+  - Solución al bloqueo de ventanas emergentes (Popups) por parte de navegadores modernos y sus escudos de seguridad.
+  - Reemplazo del método `signInWithPopup` por `signInWithRedirect` de Firebase Authentication para ofrecer una experiencia fluida y sin interrupciones.
+  - Implementación de `getRedirectResult` en el inicio del componente `Admin` para procesar y validar las credenciales de los usuarios que regresan de la redirección.
+  - Robustecimiento de la lógica de comparación de correos de administración asegurando insensibilidad a mayúsculas/minúsculas y espacios en blanco (`.toLowerCase().trim()`).
+  - Creación del reporte extendido de cambios en `/cambios-version-1.9.1.txt`.
+
+----------------------------------------------------------------------
+VERSIÓN 1.9.0 - 2026-06-18
 ----------------------------------------------------------------------
 * NUEVA SECCIÓN "PLANES Y PRECIOS" INTEGRADA:
   - Diseño y desarrollo de la nueva landing de abonos mensuales `/planes` con un selector dinámico para Hogar (Plan Hogar Esencial y Plan Hogar Plus) y Negocios (Plan Negocio Esencial, Plan Negocio Plus y Plan Negocio Premium).

@@ -1,0 +1,54 @@
+======================================================================
+REPORTE DE CAMBIOS - VERSIÓN 1.9.1
+======================================================================
+Fecha: 16 de Julio, 2026
+Autor: Consultoría de Negocios & Rediseño UX/UI Premium
+
+Este documento detalla la corrección crítica realizada en la 
+versión 1.9.1 para resolver el bloqueo de autenticación de Google
+en navegadores modernos por restricción de ventanas emergentes (Popups).
+
+----------------------------------------------------------------------
+1. DIAGNÓSTICO DEL INCONVENIENTE:
+----------------------------------------------------------------------
+* Los navegadores modernos (Safari, Chrome, Brave con Shields activados, 
+  Firefox, etc.) bloquean por defecto las ventanas emergentes (Popups) 
+  no iniciadas directamente por un gesto del usuario en un contexto 
+  seguro, o las consideran intrusivas en ciertos contenedores e iframes.
+* El uso de `signInWithPopup` en el componente de login (`Admin.tsx`) 
+  provocaba que el navegador impidiera la apertura del diálogo de cuentas
+  de Google, frustrando el flujo de acceso de los administradores (Staff).
+
+----------------------------------------------------------------------
+2. SOLUCIÓN IMPLEMENTADA (AUTENTICACIÓN POR REDIRECCIONAMIENTO):
+----------------------------------------------------------------------
+* Reemplazo de método de autenticación:
+  - Se sustituyó `signInWithPopup(auth, googleProvider)` por el método 
+    nativo y altamente compatible de redireccionamiento:
+    `signInWithRedirect(auth, googleProvider)`.
+* Captura y procesamiento del resultado de redirección:
+  - Se integró `getRedirectResult(auth)` en la inicialización (dentro del 
+    bloque `useEffect` principal) de la página `Admin.tsx`.
+  - Esto permite atrapar la sesión de Google de forma asíncrona una vez que 
+    el usuario regresa del flujo de autenticación seguro de Google.
+* Filtro de seguridad mejorado para Emails autorizados:
+  - Al retornar del redireccionamiento, el correo del usuario es limpiado 
+    mediante `.toLowerCase().trim()` y validado en la lista blanca de 
+    correos habilitados del servicio de persistencia local.
+  - En caso de no pertenecer a la lista de administradores, se realiza el 
+    cierre de sesión inmediato con `signOut(auth)` y se informa del 
+    bloqueo de acceso.
+
+----------------------------------------------------------------------
+3. DETALLE DE ARCHIVOS MODIFICADOS:
+----------------------------------------------------------------------
+* `/pages/Admin.tsx`
+  - Reemplazo de importaciones de `firebase/auth`.
+  - Migración lógica de inicio de sesión (`signInWithRedirect`).
+  - Adición del controlador de promesas de redirección (`getRedirectResult`) con tratamiento de excepciones mejorado.
+* `/components/Footer.tsx`
+  - Incremento oficial de versión del pie de página a "Versión 1.9.1".
+* `/changelog.txt`
+  - Adición del historial de mejoras de seguridad y compatibilidad de autenticación.
+* `/cambios-version-1.9.1.txt`
+  - Creación de este reporte detallado de cambios para control de versiones en GitHub.
