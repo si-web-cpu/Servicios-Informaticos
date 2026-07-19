@@ -5,7 +5,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import { auth, googleProvider, isFirebaseConfigured } from '../services/firebase';
-import { signInWithRedirect, getRedirectResult, onAuthStateChanged, signOut } from 'firebase/auth';
+import { signInWithRedirect, signInWithPopup, getRedirectResult, onAuthStateChanged, signOut } from 'firebase/auth';
 
 const Admin: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -130,7 +130,42 @@ const Admin: React.FC = () => {
     }
   };
 
-  const handleGoogleLogin = async () => {
+  const handleGoogleLoginPopup = async () => {
+    if (!isFirebaseConfigured) {
+      alert(
+        '⚠️ Configuración de Firebase requerida\n\n' +
+        'El inicio de sesión de Google requiere que configures tus credenciales de Firebase válidas.\n\n' +
+        'Por favor, asegúrate de haber cargado VITE_FIREBASE_API_KEY, VITE_FIREBASE_AUTH_DOMAIN y demás variables en la configuración del servidor, o haber hecho la provisión correcta. Mientras tanto, puedes acceder con la contraseña de Administración local para probar las herramientas.'
+      );
+      return;
+    }
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const allowedEmails = storageService.getEmails().map((e: string) => e.toLowerCase().trim());
+      if (!result.user.email || !allowedEmails.includes(result.user.email.toLowerCase().trim())) {
+        await signOut(auth);
+        alert('Acceso denegado. Esta cuenta no tiene permisos de administrador.');
+      }
+    } catch (error: any) {
+      console.error("Error detallado de Firebase Auth (Popup):", error);
+      
+      let errorMsg = 'Error al intentar iniciar sesión con Google mediante Ventana Emergente.';
+      
+      if (error.code === 'auth/unauthorized-domain') {
+        errorMsg = 'Error: Dominio no autorizado. Debes agregar este dominio en la consola de Firebase (Authentication > Settings > Authorized domains).';
+      } else if (error.code === 'auth/operation-not-allowed') {
+        errorMsg = 'Error: El inicio de sesión con Google no está habilitado en tu proyecto de Firebase.';
+      } else if (error.code === 'auth/popup-blocked') {
+        errorMsg = 'Error: El navegador bloqueó la ventana emergente. Por favor, permite las ventanas emergentes o intenta con el método de Redirección.';
+      } else {
+        errorMsg += ` (Código: ${error.code})`;
+      }
+      
+      alert(errorMsg);
+    }
+  };
+
+  const handleGoogleLoginRedirect = async () => {
     if (!isFirebaseConfigured) {
       alert(
         '⚠️ Configuración de Firebase requerida\n\n' +
@@ -142,9 +177,9 @@ const Admin: React.FC = () => {
     try {
       await signInWithRedirect(auth, googleProvider);
     } catch (error: any) {
-      console.error("Error detallado de Firebase Auth:", error);
+      console.error("Error detallado de Firebase Auth (Redirect):", error);
       
-      let errorMsg = 'Error al intentar iniciar sesión con Google.';
+      let errorMsg = 'Error al intentar iniciar sesión con Google mediante Redirección.';
       
       if (error.code === 'auth/unauthorized-domain') {
         errorMsg = 'Error: Dominio no autorizado. Debes agregar este dominio en la consola de Firebase (Authentication > Settings > Authorized domains).';
@@ -371,10 +406,13 @@ const Admin: React.FC = () => {
           </div>
 
           {isFirebaseConfigured ? (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl">
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl space-y-2">
               <p className="text-xs text-red-800 leading-relaxed">
                 <i className="fa-solid fa-triangle-exclamation mr-1 text-red-600"></i>
                 <strong className="text-red-700">Atención Crítica:</strong> Para guardar cambios en la base de datos, <strong>DEBES</strong> iniciar sesión con tu cuenta de Google autorizada. El acceso por contraseña es solo de lectura.
+              </p>
+              <p className="text-[10px] text-red-600 border-t border-red-100 pt-2 leading-relaxed font-medium">
+                ℹ️ Si te aparece un error de <span className="font-bold">"api-key-not-valid"</span>, revisa que la clave <code className="bg-red-100/60 px-1 py-0.5 rounded text-red-800 font-mono">VITE_FIREBASE_API_KEY</code> esté bien guardada en Netlify sin espacios adicionales.
               </p>
             </div>
           ) : (
@@ -386,17 +424,41 @@ const Admin: React.FC = () => {
             </div>
           )}
 
-          <button 
-            onClick={handleGoogleLogin}
-            className={`w-full py-4 rounded-xl font-bold transition-all shadow-sm flex items-center justify-center gap-3 mb-6 ${
-              isFirebaseConfigured 
-                ? 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50' 
-                : 'bg-slate-100 border border-slate-200 text-slate-400 cursor-not-allowed'
-            }`}
-          >
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className={`w-5 h-5 ${!isFirebaseConfigured ? 'grayscale opacity-50' : ''}`} />
-            {isFirebaseConfigured ? 'Acceder con Google' : 'Google Auth inactivo'}
-          </button>
+          <div className="space-y-3 mb-6">
+            <button 
+              onClick={handleGoogleLoginPopup}
+              disabled={!isFirebaseConfigured}
+              type="button"
+              className={`w-full py-3.5 rounded-xl font-bold transition-all shadow-sm flex items-center justify-center gap-3 border ${
+                isFirebaseConfigured 
+                  ? 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 active:scale-[0.98]' 
+                  : 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed'
+              }`}
+            >
+              <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className={`w-5 h-5 ${!isFirebaseConfigured ? 'grayscale opacity-50' : ''}`} />
+              <span>Acceder con Google (Ventana Emergente)</span>
+            </button>
+
+            <button 
+              onClick={handleGoogleLoginRedirect}
+              disabled={!isFirebaseConfigured}
+              type="button"
+              className={`w-full py-3.5 rounded-xl font-bold transition-all shadow-sm flex items-center justify-center gap-3 border ${
+                isFirebaseConfigured 
+                  ? 'bg-blue-50 border-blue-100 text-blue-700 hover:bg-blue-100/70 active:scale-[0.98]' 
+                  : 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed'
+              }`}
+            >
+              <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className={`w-5 h-5 ${!isFirebaseConfigured ? 'grayscale opacity-50' : ''}`} />
+              <span>Acceder con Google (Redirección)</span>
+            </button>
+
+            {isFirebaseConfigured && (
+              <p className="text-[10px] text-center text-slate-400 leading-normal px-2 mt-1">
+                💡 <span className="font-semibold text-slate-500">¿Cuál elegir?</span> Usa <span className="font-semibold text-slate-600">Ventana Emergente</span> si estás en PC, o <span className="font-semibold text-slate-600">Redirección</span> si estás en móviles/Safari.
+              </p>
+            )}
+          </div>
 
           <div className="relative flex items-center gap-4 mb-6">
             <div className="flex-grow h-px bg-slate-100"></div>
@@ -461,7 +523,7 @@ const Admin: React.FC = () => {
               </div>
             </div>
             <button 
-              onClick={handleGoogleLogin} 
+              onClick={handleGoogleLoginPopup} 
               className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all ${
                 isFirebaseConfigured
                   ? 'bg-white text-red-600 border-red-100 hover:bg-red-100'

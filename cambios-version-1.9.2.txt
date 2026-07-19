@@ -1,0 +1,65 @@
+======================================================================
+REPORTE DE CAMBIOS - VERSIÓN 1.9.2
+======================================================================
+Fecha: 18 de Julio, 2026
+Autor: Consultoría de Negocios & Rediseño UX/UI Premium
+
+Este documento detalla la implementación del módulo de acceso híbrido
+(Ventana Emergente & Redirección) en la versión 1.9.2, respondiendo al
+comportamiento asimétrico de los navegadores respecto al bloqueo de
+ventanas emergentes e interceptores de almacenamiento local/cookies de terceros.
+
+----------------------------------------------------------------------
+1. DIAGNÓSTICO DEL INCONVENIENTE:
+----------------------------------------------------------------------
+* En la versión 1.9.1, migramos la autenticación de Google al método 
+  `signInWithRedirect` para evitar que los navegadores bloqueasen el Popup.
+* Sin embargo, debido a las políticas de seguridad de cookies SameSite y de 
+  terceros que aplican navegadores como Safari, Chrome Incognito, Brave y Edge,
+  el retorno de una redirección desde un dominio de Firebase a un dominio
+  externo (como Netlify o Vercel) a menudo falla de forma silenciosa al no
+  poder compartir los tokens de autenticación en las cookies de la sesión.
+* Como resultado, tras seleccionar la cuenta de Google, el usuario regresaba
+  al sitio web pero no se le registraba el inicio de sesión (se volvía 
+  automáticamente a la pantalla con el botón de Google).
+* El método `signInWithPopup` es altamente recomendado y funciona sin 
+  inconvenientes de cookies SameSite en computadoras de escritorio, siempre
+  y cuando se inicie por un evento de click directo del usuario (lo cual no
+  se considera un "bloqueo de popup" malicioso por parte del navegador).
+
+----------------------------------------------------------------------
+2. SOLUCIÓN IMPLEMENTADA (ACCESO HÍBRIDO):
+----------------------------------------------------------------------
+* Sistema de Botón Dual:
+  - Diseñamos una interfaz de autenticación flexible en la que el usuario 
+    puede seleccionar activamente qué método de Firebase Auth utilizar.
+  - Botón principal: "Acceder con Google (Ventana Emergente)". Ideal y 
+    extremadamente confiable para computadoras de escritorio (Mac, Windows, Linux) 
+    evitando totalmente el problema de cookies SameSite inter-dominio.
+  - Botón secundario: "Acceder con Google (Redirección)". Excelente alternativa 
+    para teléfonos móviles o navegadores móviles que restringen estrictamente 
+    cualquier tipo de ventana emergente.
+* Guía de Contexto Interactiva:
+  - Agregamos una nota de luz ("💡 ¿Cuál elegir?") para orientar al administrador
+    sobre qué mecanismo utilizar de acuerdo a si está en PC, móvil o usando Safari.
+* Panel de Diagnóstico Auto-Correctivo:
+  - Al recibir reportes de errores de autenticación comunes (como el código
+    "auth/api-key-not-valid" debido a claves de API mal guardadas en el entorno
+    del servidor/Netlify), agregamos una alerta diagnóstica en la UI.
+  - Esto le indica directamente al usuario que revise si hay espacios, caracteres
+    adicionales o errores de transcripción en la variable de entorno 
+    `VITE_FIREBASE_API_KEY` dentro de su consola de Netlify.
+
+----------------------------------------------------------------------
+3. DETALLE DE ARCHIVOS MODIFICADOS:
+----------------------------------------------------------------------
+* `/pages/Admin.tsx`
+  - Importación del módulo `signInWithPopup` junto con `signInWithRedirect`.
+  - Creación de manejadores dedicados `handleGoogleLoginPopup` y `handleGoogleLoginRedirect`.
+  - Reestructuración visual de la tarjeta de inicio de sesión integrando el sistema de selección híbrida y la nota de diagnóstico de API Key.
+* `/components/Footer.tsx`
+  - Incremento oficial de versión del pie de página a "Versión 1.9.2".
+* `/changelog.txt`
+  - Registro de la versión 1.9.2 en el historial general de cambios del proyecto.
+* `/cambios-version-1.9.2.txt`
+  - Creación de este reporte detallado de modificaciones para control de versiones en GitHub.

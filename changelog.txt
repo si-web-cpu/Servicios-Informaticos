@@ -5,7 +5,18 @@ Este archivo registra de forma interna el historial de cambios, mejoras, correcc
 y nuevas funcionalidades que se han implementado en la plataforma web.
 
 ----------------------------------------------------------------------
-VERSIÓN 1.9.1 - 2026-07-16 [ACTUAL]
+VERSIÓN 1.9.2 - 2026-07-18 [ACTUAL]
+----------------------------------------------------------------------
+* IMPLEMENTACIÓN DE MÓDULO DE ACCESO HÍBRIDO (POPUP & REDIRECT):
+  - Creación de botones duales para el acceso con Google ("Ventana Emergente" y "Redirección"), permitiendo que el usuario elija el método ideal según su dispositivo o navegador.
+  - El método de "Ventana Emergente" (signInWithPopup) resuelve de manera nativa los problemas de bloqueo silencioso por almacenamiento/cookies de terceros que tiene Netlify en navegadores de escritorio (Safari, Chrome, Brave, Edge).
+  - El método de "Redirección" (signInWithRedirect) se mantiene como una excelente alternativa optimizada para dispositivos móviles o navegadores con ventanas emergentes bloqueadas.
+  - Adición de un mensaje interactivo que guía al usuario sobre cuál método de autenticación utilizar de acuerdo con su entorno.
+  - Incorporación de una nota de diagnóstico directo en la UI de acceso para identificar errores comunes de claves de Firebase ("api-key-not-valid").
+  - Creación del reporte extendido de cambios en `/cambios-version-1.9.2.txt`.
+
+----------------------------------------------------------------------
+VERSIÓN 1.9.1 - 2026-07-16
 ----------------------------------------------------------------------
 * CORRECCIÓN DE AUTENTICACIÓN CON GOOGLE (ACCESO STAFF):
   - Solución al bloqueo de ventanas emergentes (Popups) por parte de navegadores modernos y sus escudos de seguridad.
