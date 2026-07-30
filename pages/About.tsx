@@ -10,10 +10,13 @@ const About: React.FC = () => {
           <ScrollReveal className="lg:w-1/2" variant="left">
             <h1 className="text-4xl font-bold text-slate-900 mb-6 underline decoration-blue-600 decoration-4 underline-offset-8">Quiénes Somos</h1>
             <p className="text-lg text-slate-600 mb-6">
-              En <span className="font-bold text-blue-600">Servicios Informáticos</span>, nacimos con la misión de democratizar el acceso al soporte técnico de alta calidad. Creemos que no hace falta ser una multinacional para tener sistemas eficientes, seguros y modernos.
+              En <span className="font-bold text-blue-600">Servicios Informáticos</span> creemos que la tecnología debería ayudarte a trabajar, no darte dolores de cabeza.
             </p>
             <p className="text-lg text-slate-600 mb-6">
-              Desde hace más de 33 años, brindamos asistencia personalizada a cientos de hogares y pequeños emprendimientos que buscaban un socio tecnológico de confianza. No solo reparamos equipos, construimos relaciones de largo plazo.
+              Desde hace más de 33 años acompañamos a hogares, profesionales y pequeños negocios resolviendo problemas informáticos de manera simple, rápida y confiable.
+            </p>
+            <p className="text-lg text-slate-600 mb-6">
+              Nos gusta construir relaciones de largo plazo. Por eso, más que reparar computadoras, buscamos convertirnos en ese soporte técnico en el que sabés que podés confiar cuando realmente lo necesitás.
             </p>
             <div className="grid grid-cols-2 gap-6 mt-8">
               <div className="border-l-4 border-blue-600 pl-4">
